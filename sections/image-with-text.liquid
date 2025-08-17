@@ -1,0 +1,342 @@
+{% style %}
+  {% if section.settings.color_scheme == "custom" %}
+    .section-id-{{ section.id }} {
+      background: {{ section.settings.color_bg }};
+      --cust-text-color: {{ section.settings.color_text }};
+    }
+
+    {% if section.settings.button_style == 'auto' %}
+      #section-id-{{ section.id }} .button:hover {
+        background-color: {{ section.settings.color_text }};
+        color: {{ section.settings.color_bg }};
+        border-color: {{ section.settings.color_bg }};
+      }
+    {% endif %}
+  {% endif %}
+  #section-id-{{ section.id }} .feature-header {
+    max-width: {{ section.settings.title_width }}em;
+  }
+
+  @media(min-width: 768px) {
+    .section-id-{{ section.id }} .image-with-text__image__inner {
+      {% if section.settings.media_size == "cover" %}
+        transform: scale({{ section.settings.image_width | times: 0.01 }});
+      {% elsif section.settings.media_size == "contain" %}
+        height: auto !important;
+        width: {{ section.settings.image_width }}% !important;
+      {% endif %}
+    }
+
+    .section-id-{{ section.id }} .feature-header {
+      {%- assign title_size_medium = section.settings.title_size | times: 0.7 -%}
+      font-size: {{ title_size_medium }}px;
+    }
+
+    .section-id-{{ section.id }} .image-with-text__text {
+      flex-basis: {{ section.settings.text_width }}%;
+    }
+
+    .section-id-{{ section.id }} .image-with-text__image__inner .rimage-outer-wrapper {
+      background-size: {{ section.settings.media_size }};
+    }
+  }
+
+  @media (min-width: 992px) {
+    .section-id-{{ section.id }} .feature-header {
+      font-size: {{ section.settings.title_size }}px;
+    }
+  }
+{% endstyle %}
+
+{% capture image_html %}
+  <div class="image-with-text__image lazyload--placeholder">
+    <div class="image-with-text__image__inner">
+      {%- if section.settings.image == blank and section.settings.video_shopify == blank -%}
+        <div class="placeholder-image">{{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}</div>
+      {%- elsif section.settings.video_shopify != blank -%}
+        {% render 'inline-video', video_shopify: section.settings.video_shopify, image: section.settings.image %}
+      {%- elsif section.settings.image != blank -%}
+        <div class="rimage-outer-wrapper lazyload fade-in"
+            data-cc-animate="cc-zoom-out"
+            data-bgset="{% render 'bgset', image: section.settings.image %}"
+            data-sizes="auto"
+            data-parent-fit="cover"
+            style="max-width: {{ section.settings.image.width }}px; max-height: {{ section.settings.image.height }}px; background-position: {{ section.settings.image.presentation.focal_point }}">
+          <div class="rimage-wrapper" style="padding-top:{{ 1 | divided_by: section.settings.image.aspect_ratio | times: 100 }}%">
+            <noscript>
+              <img src="{{ section.settings.image | img_url: '1024x1024' }}" alt="{{ section.settings.image.alt | escape }}" class="rimage__image">
+            </noscript>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endcapture %}
+
+<div class="image-with-text cf
+  section-id-{{ section.id }} use-{{ section.settings.color_scheme }}-bg
+  {% if section.settings.image_width < 100 and section.settings.media_size == "contain" %}section-spacing-sm{% endif %}
+  image-with-text--{{ section.settings.media_size }}
+" id="section-id-{{ section.id }}" data-section-type="image-with-text" data-cc-animate>
+
+  {% if section.settings.image_position == 'left' %}{{ image_html }}{% endif %}
+
+  <div class="image-with-text__text align-{{ section.settings.text_alignment }}">
+    <div class="image-with-text__text__wrap
+        {% if brightness < 190 and alpha > 0 %}inherit-colors{% endif %}
+        {% if section.settings.image_width < 100 and section.settings.media_size == "contain" %}padded-block-y{% else %}padded-block{% endif %}
+      ">
+      {% if section.settings.subheading != blank %}
+        <div class="feature-subheader" data-cc-animate="cc-fade-in-up" data-cc-animate-delay="0.1s">{{ section.settings.subheading }}</div>
+      {% endif %}
+
+      {% if section.settings.title != blank %}
+        <h2 class="feature-header h2 align-{{ section.settings.text_alignment }}" data-cc-animate="cc-fade-in-up" data-cc-animate-delay="0.2s">
+          {{ section.settings.title }}
+        </h2>
+      {% endif %}
+
+      <div class="rte align-{{ section.settings.text_alignment }}" data-cc-animate="cc-fade-in-up" data-cc-animate-delay="0.3s">{{ section.settings.text }}</div>
+      {% if section.settings.button_label != blank %}
+
+      <div class="button-row" data-cc-animate="cc-fade-in-up" data-cc-animate-delay="0.4s">
+        {% if section.settings.button_link != blank %}
+          <a data-cc-animate-click class="
+            {% if section.settings.button_style != 'auto' %}button-custom {% endif %}
+            {% if section.settings.button_style == 'link' %}link-display {% else %}button {% if section.settings.button_style == 'secondary' %}alt{% endif %}{% endif %}"
+             href="{{ section.settings.button_link }}">
+        {% else %}
+          <span class="
+            {% if section.settings.button_style != 'auto' %}button-custom {% endif %}
+            {% if section.settings.button_style == 'link' %}link-display {% else %}button {% if section.settings.button_style == 'secondary' %}alt{% endif %}{% endif %}">
+        {% endif %}
+
+          {{ section.settings.button_label | escape }}
+
+        {% if section.settings.button_link == blank %}
+          </span>
+        {% else %}
+          </a>
+        {% endif %}
+      </div>
+
+      {% endif %}
+    </div>
+  </div>
+
+  {% if section.settings.image_position == 'right' %}{{ image_html }}{% endif %}
+
+</div>
+
+
+{% schema %}
+  {
+    "name": "Media with text",
+    "class": "section-image-with-text",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Text"
+      },
+      {
+        "type": "text",
+        "id": "subheading",
+        "label": "Subheading"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Media with text"
+      },
+      {
+        "type": "range",
+        "id": "title_size",
+        "min": 16,
+        "max": 100,
+        "step": 2,
+        "unit": "px",
+        "label": "Heading text size",
+        "default": 28
+      },
+      {
+        "type": "range",
+        "id": "title_width",
+        "min": 4,
+        "max": 40,
+        "step": 2,
+        "unit": "em",
+        "label": "Maximum heading width",
+        "default": 12
+      },
+      {
+        "type": "richtext",
+        "id": "text",
+        "label": "Text",
+        "default": "<p>Use this text to share information about your store. Describe products, share announcements, or welcome customers to your store.</p>"
+      },
+      {
+        "type": "text",
+        "id": "button_label",
+        "label": "Button"
+      },
+      {
+        "type": "url",
+        "id": "button_link",
+        "label": "Button link"
+      },
+      {
+        "type": "select",
+        "id": "text_alignment",
+        "label": "Text alignment",
+        "default": "center",
+        "options": [
+          {
+            "label": "Left",
+            "value": "left"
+          },
+          {
+            "label": "Center",
+            "value": "center"
+          },
+          {
+            "label": "Right",
+            "value": "right"
+          }
+        ]
+      },
+      {
+        "type": "range",
+        "id": "text_width",
+        "min": 30,
+        "max": 70,
+        "step": 1,
+        "unit": "%",
+        "label": "Text width",
+        "default": 50
+      },
+      {
+        "type": "select",
+        "id": "button_style",
+        "label": "Button style",
+        "default": "auto",
+        "options": [
+          {
+            "label": "Button - primary",
+            "value": "primary"
+          },
+          {
+            "label": "Button - secondary",
+            "value": "secondary"
+          },
+          {
+            "label": "Button - auto",
+            "value": "auto"
+          },
+          {
+            "label": "Link",
+            "value": "link"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "Media"
+      },
+      {
+        "id": "image",
+        "type": "image_picker",
+        "label": "Image",
+        "info": "If coupled with a video, it will show while the video is loading, or if it cannot autoplay."
+      },
+      {
+        "id": "video_shopify",
+        "type": "video",
+        "label": "Video upload",
+        "info": "Hosted by Shopify."
+      },
+      {
+        "type": "range",
+        "id": "image_width",
+        "min": 40,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "label": "Media scale",
+        "default": 100
+      },
+      {
+        "type": "select",
+        "id": "image_position",
+        "label": "Media position",
+        "default": "right",
+        "options": [
+          {
+            "value": "right",
+            "label": "Right"
+          },
+          {
+            "value": "left",
+            "label": "Left"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "media_size",
+        "label": "Media size",
+        "options": [
+          {
+            "value": "cover",
+            "label": "Fill"
+          },
+          {
+            "value": "contain",
+            "label": "Natural"
+          }
+        ],
+        "default": "cover"
+      },
+      {
+        "type": "header",
+        "content": "Style"
+      },
+      {
+        "type": "radio",
+        "id": "color_scheme",
+        "label": "Color scheme",
+        "default": "standard",
+        "options": [
+          {
+            "value": "standard",
+            "label": "Standard"
+          },
+          {
+            "value": "alt",
+            "label": "Alternate colors"
+          },
+          {
+            "value": "custom",
+            "label": "Custom colors"
+          }
+        ]
+      },
+      {
+        "type": "color",
+        "id": "color_bg",
+        "label": "Custom background color"
+      },
+      {
+        "type": "color",
+        "id": "color_text",
+        "label": "Custom text color"
+      }
+    ],
+    "presets": [
+	    {
+        "name": "Media with text",
+        "settings": {}
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,515 @@
+{
+  "sections": {
+    "slideshow_iaie8i": {
+      "type": "slideshow",
+      "blocks": {
+        "image_ckNEQT": {
+          "type": "image",
+          "settings": {
+            "image": "",
+            "mobile_image": "",
+            "slide_link": "",
+            "subheading": "Our Summer Edit",
+            "title": "Poolside Paradise",
+            "title_size": 72,
+            "title_width": 10,
+            "heading_h1": false,
+            "text": "<p>Palm trees, beach escapes and lush tropical settings.<\/p>",
+            "enlarge_text": true,
+            "button_label": "The Tango Collection",
+            "overlay_position": "position--left position--vcenter",
+            "overlay_position_mobile": "position--hcenter-xs position--bottom-xs"
+          }
+        },
+        "image_GTk46t": {
+          "type": "image",
+          "settings": {
+            "image": "",
+            "mobile_image": "",
+            "slide_link": "",
+            "subheading": "Sustainable swim",
+            "title": "Buy better. Wear more.",
+            "title_size": 72,
+            "title_width": 12,
+            "heading_h1": false,
+            "text": "<p>When it comes to sustainable swimwear, the future starts now!<\/p>",
+            "enlarge_text": true,
+            "button_label": "Shop Messina",
+            "overlay_position": "position--hcenter position--vcenter",
+            "overlay_position_mobile": "position--hcenter-xs position--bottom-xs"
+          }
+        },
+        "image_8BBXd8": {
+          "type": "image",
+          "settings": {
+            "image": "",
+            "mobile_image": "",
+            "slide_link": "",
+            "subheading": "THE TRANSEASONAL EDIT",
+            "title": "Best-selling classics",
+            "title_size": 72,
+            "title_width": 10,
+            "heading_h1": false,
+            "text": "<p>Stunning swimsuits designed to last season after season.<\/p>",
+            "enlarge_text": true,
+            "button_label": "Shop The Collection",
+            "overlay_position": "position--left position--vcenter",
+            "overlay_position_mobile": "position--hcenter-xs position--bottom-xs"
+          }
+        },
+        "image_id9ppQ": {
+          "type": "image",
+          "settings": {
+            "image": "",
+            "mobile_image": "",
+            "slide_link": "",
+            "subheading": "Stunning Swimwear",
+            "title": "Maximum impact",
+            "title_size": 72,
+            "title_width": 10,
+            "heading_h1": false,
+            "text": "<p>Shop our collection of glamorous swimsuits and bikinis.<\/p>",
+            "enlarge_text": true,
+            "button_label": "Shop New Arrivals",
+            "overlay_position": "position--hcenter position--vcenter",
+            "overlay_position_mobile": "position--hcenter-xs position--bottom-xs"
+          }
+        }
+      },
+      "block_order": [
+        "image_ckNEQT",
+        "image_GTk46t",
+        "image_8BBXd8",
+        "image_id9ppQ"
+      ],
+      "settings": {
+        "height": "full",
+        "height_desktop": 960,
+        "height_mobile": 620,
+        "full_width": true,
+        "mobile_overlay_under": false,
+        "overlay_style_tint": true,
+        "slide_transition": "slide",
+        "slide_navigation": "dots",
+        "autoplay": true,
+        "autoplay_speed": 8
+      }
+    },
+    "16596323938bf2137f": {
+      "type": "scrolling-banner",
+      "settings": {
+        "text": "UPCYCLED BEAUTIFUL LUXURIOUS SUSTAINABLE",
+        "link": "",
+        "text_size": 24,
+        "line_height": 3.2,
+        "speed": 8,
+        "direction": "left",
+        "font": "base",
+        "space_x": true,
+        "stencil_all_text": false,
+        "stencil_text": "BEAUTIFUL,SUSTAINABLE",
+        "overlay_style_tint": false,
+        "color_scheme": "alt",
+        "color_bg": "#dd6666",
+        "color_text": "#ffffff"
+      }
+    },
+    "collection-list": {
+      "type": "collection-list",
+      "blocks": {
+        "1648220659c91ed362-0": {
+          "type": "collection",
+          "settings": {
+            "collection": "",
+            "image": ""
+          }
+        },
+        "1648220659c91ed362-1": {
+          "type": "collection",
+          "settings": {
+            "collection": "",
+            "image": ""
+          }
+        },
+        "1648220659c91ed362-2": {
+          "type": "collection",
+          "settings": {
+            "collection": "",
+            "image": ""
+          }
+        },
+        "1648220659c91ed362-3": {
+          "type": "collection",
+          "settings": {
+            "collection": "",
+            "image": ""
+          }
+        },
+        "1648220659c91ed362-4": {
+          "type": "collection",
+          "settings": {
+            "collection": "",
+            "image": ""
+          }
+        },
+        "4c61be09-9a8d-4da7-b5f4-fdc853fa2f38": {
+          "type": "collection",
+          "settings": {
+            "collection": "",
+            "image": ""
+          }
+        }
+      },
+      "block_order": [
+        "1648220659c91ed362-0",
+        "1648220659c91ed362-1",
+        "1648220659c91ed362-2",
+        "1648220659c91ed362-3",
+        "1648220659c91ed362-4",
+        "4c61be09-9a8d-4da7-b5f4-fdc853fa2f38"
+      ],
+      "settings": {
+        "title": "Shop Collections",
+        "layout": "carousel",
+        "grid": 4,
+        "grid_mobile": "2",
+        "show_view_all": true,
+        "alternate_bg_color": false
+      }
+    },
+    "gallery": {
+      "type": "gallery",
+      "blocks": {
+        "1601554848772-0": {
+          "type": "image",
+          "settings": {
+            "image": "",
+            "enlarge_image": false,
+            "subheading": "Fun in the sun",
+            "title": "New Arrivals",
+            "title_width": 10,
+            "heading_h1": false,
+            "button_label": "Shop New",
+            "link": "",
+            "text_alignment": "position--left position--bottom"
+          }
+        },
+        "1601560664254": {
+          "type": "image",
+          "settings": {
+            "image": "",
+            "enlarge_image": true,
+            "subheading": "New Arrivals",
+            "title": "Maximum impact",
+            "title_width": 10,
+            "heading_h1": false,
+            "button_label": "Shop One Piece",
+            "link": "",
+            "text_alignment": "position--left position--bottom"
+          }
+        }
+      },
+      "block_order": [
+        "1601554848772-0",
+        "1601560664254"
+      ],
+      "settings": {
+        "title": "",
+        "grid": 2,
+        "desktop_image_height": 760,
+        "mobile_image_height": 400,
+        "title_size": 40,
+        "enable_margin": true,
+        "full_width": true,
+        "enable_carousel": true,
+        "overlay_style_tint": true,
+        "alternate_bg_color": true
+      }
+    },
+    "16520947837ca06543": {
+      "type": "rich-text",
+      "settings": {
+        "subheading": "DESIGNED BY WOMEN FOR WOMEN",
+        "title": "“The essence of the Australian beach lifestyle through relaxed escapism, a celebration of form and function, confidence and sustainable ideas.”",
+        "title_size": 34,
+        "title_width": 22,
+        "heading_h1": false,
+        "text": "",
+        "image": "",
+        "image_width": 250,
+        "button_label": "",
+        "button_link": "",
+        "button_style": "auto",
+        "text_alignment": "center",
+        "enlarge_text": false,
+        "full_width": false,
+        "no_padding_bottom": true,
+        "color_scheme": "standard",
+        "color_bg": "",
+        "color_text": ""
+      }
+    },
+    "16518477397c8b34a1": {
+      "type": "testimonials",
+      "blocks": {
+        "1651847739fa040919-0": {
+          "type": "testimonial",
+          "settings": {
+            "star_rating": 5,
+            "title": "The Elite Story",
+            "text": "<p>Discover our Elite Spliced Multifit One Piece, featuring removable soft cups, adjustable & convertible straps, & our signature powermesh support front & back.<\/p>",
+            "button_label": "Shop Elite One Piece",
+            "link": "",
+            "image1": "",
+            "image1_caption": "Elite Spliced Multifit One Piece",
+            "image2": "",
+            "image2_caption": "",
+            "layout": "right"
+          }
+        }
+      },
+      "block_order": [
+        "1651847739fa040919-0"
+      ],
+      "settings": {
+        "title": "",
+        "button_style": "secondary",
+        "alternate_bg_color": false
+      }
+    },
+    "background-video": {
+      "type": "background-video",
+      "settings": {
+        "image": "",
+        "subheading": "Our vision",
+        "title": "To empower women globally to celebrate summer with confidence.",
+        "title_size": 60,
+        "title_width": 16,
+        "heading_h1": false,
+        "text": "<p>Luxurious high quality pieces that are designed to last.<\/p>",
+        "enlarge_text": false,
+        "button_label": "",
+        "button_link": "",
+        "overlay_position": "position--hcenter position--vcenter",
+        "height": "fixed",
+        "height_desktop": 720,
+        "height_mobile": 500,
+        "full_width": true,
+        "overlay_style_tint": true
+      }
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "blocks": {
+        "1601538737164-0": {
+          "type": "testimonial",
+          "settings": {
+            "star_rating": 5,
+            "title": "Lola Shimmer",
+            "text": "<p>Explore the luxe details of our new Lola Shimmer collection, which features a cross trim detail that flatters & contours.<\/p>",
+            "button_label": "Shop the collection",
+            "link": "",
+            "image1": "",
+            "image1_caption": "Lola Shimmer",
+            "image2": "",
+            "image2_caption": "Lola Shimmer Tank Style One Piece",
+            "layout": "left"
+          }
+        }
+      },
+      "block_order": [
+        "1601538737164-0"
+      ],
+      "settings": {
+        "title": "",
+        "button_style": "secondary",
+        "alternate_bg_color": false
+      }
+    },
+    "text-columns-with-images": {
+      "type": "text-columns-with-images",
+      "blocks": {
+        "1601557215944-2": {
+          "type": "text_block",
+          "settings": {
+            "enable_image": true,
+            "image": "",
+            "image_width": 700,
+            "title": "Tango with me",
+            "text": "<p>Discover the alluring new tropical tango print, inspired by palm trees, beach escapes, & lush tropical settings.<\/p>",
+            "button_label": "Shop Tango",
+            "link": ""
+          }
+        },
+        "1601557215944-1": {
+          "type": "text_block",
+          "settings": {
+            "enable_image": true,
+            "image": "",
+            "image_width": 700,
+            "title": "Tango High Waist Gathered Side Pant",
+            "text": "<p>If there’s one theme that inspires us the most it’s palm trees, beach escapes and lush tropical settings.<\/p>",
+            "button_label": "Shop now",
+            "link": ""
+          }
+        },
+        "1601557215944-0": {
+          "type": "text_block",
+          "settings": {
+            "enable_image": true,
+            "image": "",
+            "image_width": 700,
+            "title": "Cross Front Multifit Bra Top",
+            "text": "<p>Featuring a luxe V neckline, thick & supportive shoulder straps, & hidden soft cups, this shape offers the perfect amount of lift & support.<\/p>",
+            "button_label": "Shop the look",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "1601557215944-2",
+        "1601557215944-1",
+        "1601557215944-0"
+      ],
+      "settings": {
+        "title": "More for you. Tango with us.",
+        "text_alignment": "center",
+        "button_style": "link",
+        "media_shape": "natural",
+        "alternate_bg_color": true,
+        "full_width": true
+      }
+    },
+    "51481929-779a-46a0-b577-17271a066706": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "Shop Best Sellers",
+        "collection": "",
+        "layout": "carousel",
+        "show_vendor": false,
+        "grid": 4,
+        "rows": 2,
+        "grid_mobile": "2",
+        "hide_swatches": false,
+        "alternate_bg_color": false,
+        "show_view_all": true
+      }
+    },
+    "16530390784468cef2": {
+      "type": "scrolling-banner",
+      "settings": {
+        "text": "New Arrivals",
+        "link": "",
+        "text_size": 100,
+        "line_height": 3.6,
+        "speed": 7.5,
+        "direction": "left",
+        "font": "base",
+        "space_x": false,
+        "stencil_all_text": false,
+        "stencil_text": "Arrivals",
+        "image": "",
+        "overlay_style_tint": true,
+        "color_scheme": "custom",
+        "color_bg": "#6e6e6e",
+        "color_text": "#ffffff"
+      }
+    },
+    "featured-product": {
+      "type": "featured-product",
+      "blocks": {
+        "1648223128d36c17cb-0": {
+          "type": "vendor_and_type",
+          "settings": {
+            "show_vendor": true,
+            "show_type": false
+          }
+        },
+        "1648223128d36c17cb-1": {
+          "type": "title",
+          "settings": {}
+        },
+        "1648223128d36c17cb-2": {
+          "type": "price",
+          "settings": {
+            "show_tax_and_shipping": false
+          }
+        },
+        "1648223128d36c17cb-3": {
+          "type": "rating",
+          "settings": {}
+        },
+        "1648223128d36c17cb-4": {
+          "type": "variant_picker",
+          "settings": {
+            "variant_style": "underlined",
+            "show_realtime_availability": true
+          }
+        },
+        "1648223128d36c17cb-5": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_quantity_selector": true,
+            "enable_payment_button": false,
+            "show_gift_card_recipient": false
+          }
+        }
+      },
+      "block_order": [
+        "1648223128d36c17cb-0",
+        "1648223128d36c17cb-1",
+        "1648223128d36c17cb-2",
+        "1648223128d36c17cb-3",
+        "1648223128d36c17cb-4",
+        "1648223128d36c17cb-5"
+      ],
+      "settings": {
+        "product": "",
+        "show_backorder_text": true,
+        "slide_nav_style": "arrows",
+        "media_crop": "center",
+        "enable_zoom": true,
+        "zoom_cursor": "plus-light",
+        "enable_video_looping": false,
+        "highlight_selected_media": true
+      }
+    },
+    "featured-blog": {
+      "type": "featured-blog",
+      "settings": {
+        "title": "From the Magazine",
+        "blog": "news",
+        "post_limit": 3,
+        "show_view_all": true,
+        "blog_show_author": false,
+        "blog_show_date": true,
+        "layout": "slideshow",
+        "blog_first_post_big": true,
+        "alternate_bg_color": true,
+        "height": "fixed",
+        "height_desktop": 760,
+        "height_mobile": 500,
+        "full_width": true,
+        "overlay_style_tint": true,
+        "autoplay": true,
+        "autoplay_speed": 7,
+        "slide_transition": "slide"
+      }
+    }
+  },
+  "order": [
+    "slideshow_iaie8i",
+    "16596323938bf2137f",
+    "collection-list",
+    "gallery",
+    "16520947837ca06543",
+    "16518477397c8b34a1",
+    "background-video",
+    "testimonials",
+    "text-columns-with-images",
+    "51481929-779a-46a0-b577-17271a066706",
+    "16530390784468cef2",
+    "featured-product",
+    "featured-blog"
+  ]
+}

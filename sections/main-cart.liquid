@@ -1,0 +1,185 @@
+{%- liquid
+  assign continue_shopping_page = routes.all_products_collection_url
+  if section.settings.continue_shopping_page != blank
+    assign continue_shopping_page = section.settings.continue_shopping_page
+  endif
+-%}
+
+<div class="central py-medium content" data-section-type="cart-template" data-ajax-update="true">
+  <cart-form data-section-id="{{ section.id }}" data-ajax-update="true">
+    {% if section.settings.cart_show_title %}
+    <h1 data-cc-animate class="h2">{{ 'cart.general.title' | t }}</h1>
+    {% endif %}
+
+    <form action="{{ routes.cart_url }}" method="post" id="cartform" data-cc-animate>
+
+      <ul class="cart-list clearfix" data-merge-list="cart-items">
+
+        {% if cart.item_count > 0 %}
+          <li class="cart-item cart-list-header" data-merge-list-item="item-key:head">
+            <div class="col-image">{{ 'cart.general.product' | t }}</div>
+            <div class="col-notimage">
+              <div class="desc"></div>
+              <div class="item-price">{{ 'cart.general.price' | t }}</div>
+              <div class="quantity-and-remove">{{ 'cart.general.quantity' | t }}</div>
+              <div class="line-total">{{ 'cart.general.total' | t }}</div>
+            </div>
+          </li>
+        {% else %}
+          <div data-merge-list-item="item-key:empty">
+            <div class="rte" data-cc-animate data-cc-animate-delay="0.4s">
+              <p data-cc-animate data-cc-animate-delay="0.2s" class="align-center">
+                {{ 'cart.general.empty' | t }}
+              </p>
+              <p class="align-center"><a data-cc-animate-click href="{{ continue_shopping_page }}">{{ 'cart.general.continue_browsing' | t }}</a></p>
+            </div>
+          </div>
+        {% endif %}
+
+        {% for item in cart.items %}
+
+          {% comment %}
+          Determining the handle of the collection that was last seen for the 'continue shopping' link.
+          {% endcomment %}
+          <div data-merge-list-item="item-key:{{ item.key }}|{{ item.final_price }}{% for discount_allocation in item.line_level_discount_allocations %}|{{ discount_allocation.discount_application.title | escape }}{% endfor %}"
+            {% comment %} Discount items are difficult to predict - BOGOFs appear as a separate item with the same key as an existing item - simpler to always refresh {% endcomment %}
+            {%- if item.line_level_discount_allocations == empty -%}
+            data-merge-cache="{{ item.key }}|{{ item.quantity }}|{{ item.final_line_price }}|{% if item.selling_plan_allocation %}{{ item.selling_plan_allocation.selling_plan.id }}{% endif %}"
+            {%- endif -%}>
+              {%- render 'cart-item', item: item, forloop: forloop -%}
+          </div>
+        {% endfor %}
+      </ul>
+
+      <div class="update-continue{% if cart.items == empty %} hidden{% endif %}" data-merge-attributes="continue">
+        <input class="update textbutton" type="submit" name="update" value="{{ 'cart.general.update' | t | escape }}" />
+        <span>|</span>
+        <a data-cc-animate-click class="continue" href="{{ continue_shopping_page }}">{{ 'cart.general.continue' | t }}</a>
+      </div>
+
+      <div class="under-cart{% if cart.items == empty %} hidden{% endif %}" data-merge-attributes="under-cart">
+        <div class="subtotal-row" data-merge="total">
+          {%- if cart.cart_level_discount_applications != blank -%}
+            <ul class="cart-discount-list align-right">
+              {%- for discount_application in cart.cart_level_discount_applications -%}
+                <li class="cart-discount cart-discount--inline">
+                  <span class="cart-discount__label">{{ discount_application.title }}</span>
+                  <span class="cart-discount__amount">-<span class="theme-money">{%- render "price", price: discount_application.total_allocated_amount, disable_currency_code: true -%}</span></span>
+                </li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+
+          <div class="subtotal">
+            <span class="label">{{ 'cart.general.subtotal' | t }}</span>
+            <span class="amount theme-money">{%- render "price", price: cart.total_price, is_total_price: true -%}</span>
+          </div>
+        </div>
+
+        {% if section.settings.cart_note_show %}
+        <p class="note-area">
+          <label for="note" class="feature-subheader--small">{{ 'cart.label.note' | t }}</label>
+          <textarea id="note" name="note">{{ cart.note }}</textarea>
+        </p>
+        {% endif %}
+
+        {% if section.settings.cart_terms_show %}
+        <p class="terms rte">
+          <input type="checkbox" id="terms" />
+          {% assign terms_url = section.settings.cart_terms_page %}
+          {% capture terms_label_html %}<label for="terms">{{ 'cart.terms.agreement_html' | t: terms_url: terms_url }}</label>{% endcapture %}
+          {% if section.settings.cart_terms_page == blank %}
+          {{ terms_label_html | replace: '<a ', '<span ' | replace: '</a>', '</span>' }}
+          {% else %}
+          {{ terms_label_html }}
+          {% endif %}
+        </p>
+        {% endif %}
+
+        {% if section.settings.show_tax_and_shipping %}
+          {%- capture taxes_shipping_checkout -%}
+            {%- if cart.taxes_included and shop.shipping_policy.body != blank -%}
+              {{ 'cart.general.taxes_included_and_shipping_policy_html' | t: link: shop.shipping_policy.url }}
+            {%- elsif cart.taxes_included -%}
+              {{ 'cart.general.taxes_included_but_shipping_at_checkout' | t }}
+            {%- elsif shop.shipping_policy.body != blank -%}
+              {{ 'cart.general.taxes_and_shipping_policy_at_checkout_html' | t: link: shop.shipping_policy.url }}
+            {%- else -%}
+              {{ 'cart.general.taxes_and_shipping_at_checkout' | t }}
+            {%- endif -%}
+          {%- endcapture -%}
+
+          <div class="cart-policies rte">{{ taxes_shipping_checkout }}</div>
+        {% endif %}
+
+        <input type="submit" class="checkout-btn" name="checkout" value="{{ 'cart.general.checkout' | t | escape }}" />
+
+        {% comment %}Paypal and Google checkout buttons{% endcomment %}
+        {% if section.settings.show_additional_checkout_buttons and additional_checkout_buttons and section.settings.cart_terms_show == false %}
+        <div class="additional-checkout-buttons">
+          {{ content_for_additional_checkout_buttons }}
+        </div>
+        {% endif %}
+      </div>
+
+    </form>
+  </cart-form>
+</div>
+
+
+{% schema %}
+  {
+    "name": "Cart page",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "cart_show_title",
+        "label": "Show page title",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_terms_show",
+        "label": "Show Terms and Conditions checkbox",
+        "info": "Additional checkout buttons will be hidden",
+        "default": false
+      },
+      {
+        "type": "url",
+        "id": "cart_terms_page",
+        "label": "Page for 'Terms and Conditions' link"
+      },
+      {
+        "type": "url",
+        "id": "continue_shopping_page",
+        "label": "Page for 'Continue shopping' link"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_note_show",
+        "label": "Enable order notes",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_tax_and_shipping",
+        "label": "Show tax and shipping information",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_additional_checkout_buttons",
+        "label": "Show additional checkout options",
+        "default": true,
+        "info": "Display other gateways and quick checkout buttons. [Read more](https://help.shopify.com/en/manual/payments/accelerated-checkouts)"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_backorder_text",
+        "label": "Show backorder text",
+        "default": true,
+        "info": "Only shows for products which use Shopify inventory tracking and are available to purchase when out of stock."
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,98 @@
+<li class="cart-item clearfix" data-variant-id="{{ item.variant.id }}" data-key="{{ item.key }}" data-index="{{ item.index | plus: 1 }}">
+  <div class="flex">
+      <div class="col-image">
+        {% if item.image %}
+          <a data-cc-animate-click class="image" href="{{ item.url }}">
+            {{ item.image | image_url: width: 132 | image_tag }}
+          </a>
+        {% endif %}
+      </div>
+    <div class="col-notimage">
+      <div class="desc">
+        {% if settings.show_preorder_label and item.product.template_suffix contains 'preorder' %}
+          <div class="feature-subheader feature-subheader--small">{{ 'products.product.preorder' | t }}</div>
+        {% endif %}
+
+        <div class="title">
+          <a data-cc-animate-click href="{{ item.url }}">
+            <span class="product-title">{{ item.product.title }}</span>
+            {% unless item.product.has_only_default_variant %}{{ item.variant.title }}{% endunless %}
+          </a>
+        </div>
+
+        {% render 'line-item-properties', line_item: item %}
+
+        {% if item.selling_plan_allocation %}
+          <div class="subscription-description">
+            <p>{{ item.selling_plan_allocation.selling_plan.name }}</p>
+          </div>
+        {% endif %}
+
+        {% if section.settings.show_backorder_text == true %}
+          {% render 'backorder', variant: item.variant %}
+        {% endif %}
+      </div>
+
+      <div class="item-price">
+        {% if item.variant.compare_at_price > item.variant.price %}
+          <div class="original-price theme-money">{%- render "price", price: item.variant.compare_at_price, disable_currency_code: true -%}</div>
+        {% elsif item.original_line_price > item.final_line_price %}
+          <div class="original-price theme-money">{%- render "price", price: item.original_price, disable_currency_code: true -%}</div>
+        {% endif %}
+        <div class="theme-money">{%- render "price", price: item.final_price, disable_currency_code: true -%}</div>
+
+        {% render 'unit-price', variant: item %}
+
+        {% if item.line_level_discount_allocations.size > 0 %}
+          <ul class="cart-discount-list">
+          {% for discount_allocation in item.line_level_discount_allocations %}
+            <li class="cart-discount">
+              <div class="cart-discount__label">{{ discount_allocation.discount_application.title }}</div>
+              <div class="cart-discount__amount">(-<span class="theme-money">{%- render "price", price: discount_allocation.amount, disable_currency_code: true -%}</span>)</div>
+            </li>
+          {% endfor %}
+
+          </ul>
+        {% endif %}
+      </div>
+
+      <div class="quantity-and-remove">
+        <div class="quantity border-radius-{{ settings.buttons_shape }}">
+          <a class="quantity-down minus js-disable-while-updating" href="{{ routes.cart_change_url }}?line={{ forloop.index }}&quantity={{ item.quantity | minus: 1 }}" aria-label="{{ 'cart.general.decrease' | t | escape }}"><span>&minus;</span></a>
+          <input
+            class="select-on-focus cart-item__quantity-input js-disable-while-updating"
+            type="number"
+            size="2"
+            id="updates_{{ item.id }}"
+            name="updates[]"
+            value="{{ item.quantity }}"
+            data-line-index="{{ forloop.index }}"
+            data-initial-value="{{ item.quantity }}"
+            aria-label="{{ 'cart.general.quantity' | t | escape }}"
+            {% if item.variant.inventory_policy == 'deny' and item.variant.inventory_management != blank %}
+              max="{{ item.variant.inventory_quantity }}"
+            {% endif %}>
+          {% if item.variant.inventory_policy != 'deny'
+            or item.variant.inventory_management == blank
+            or item.variant.inventory_quantity > item.quantity
+          %}
+            <a class="plus quantity-up js-disable-while-updating" href="{{ routes.cart_change_url }}?line={{ forloop.index }}&quantity={{ item.quantity | plus: 1 }}" aria-label="{{ 'cart.general.increase' | t | escape }}"><span>&plus;</span></a>
+          {% endif %}
+        </div>
+
+        <a class="cart-item__remove js-disable-while-updating" href="{{ routes.cart_change_url }}?line={{ forloop.index }}&quantity=0">{{ 'cart.general.remove' | t | escape }}</a>
+      </div>
+
+      <div class="line-total">
+        {% if item.variant.compare_at_price > item.variant.price %}
+          {%- assign total_compare_at_price = item.variant.compare_at_price | times: item.quantity -%}
+          <div class="original-price theme-money">{%- render "price", price: total_compare_at_price, disable_currency_code: true -%}</div>
+        {% elsif item.original_line_price != item.final_line_price %}
+          <div class="original-price theme-money">{%- render "price", price: item.original_line_price, disable_currency_code: true -%}</div>
+        {% endif %}
+        <div class="theme-money">{%- render "price", price: item.final_line_price, disable_currency_code: true -%}</div>
+      </div>
+    </div>
+  </div>
+  <div class="error-message"></div>
+</li>
