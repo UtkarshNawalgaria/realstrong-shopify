@@ -1,0 +1,171 @@
+{%- liquid
+  assign video = block.settings.video
+  assign product = block.settings.product
+  assign custom_title = block.settings.custom_title
+
+  if custom_title != blank
+    assign display_title = custom_title
+  elsif product != blank
+    assign display_title = product.title
+  else
+    assign display_title = 'Featured Video'
+  endif
+
+  if product != blank
+    assign product_url = product.url
+    assign product_price = product.price | money
+  else
+    assign product_url = '#'
+    assign product_price = ''
+  endif
+-%}
+
+{% if product != blank %}
+  <a
+    href="{{ product_url }}"
+    class="video-block video-block--clickable"
+    data-cc-animate-click
+    {{ block.shopify_attributes }}
+  >
+{% else %}
+  <div class="video-block" {{ block.shopify_attributes }}>
+{% endif %}
+{% if video != blank %}
+  <div class="video-block__video-container">
+    {% if video.type == 'youtube' or video.type == 'vimeo' %}
+      <div class="video-block__video" style="aspect-ratio: 16/9; background: #000;">
+        {% if video.type == 'youtube' %}
+          <iframe
+            src="https://www.youtube.com/embed/{{ video.id }}?autoplay=0&mute=1&controls=1&rel=0&modestbranding=1"
+            width="100%"
+            height="100%"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            loading="lazy"
+          >
+          </iframe>
+        {% elsif video.type == 'vimeo' %}
+          <iframe
+            src="https://player.vimeo.com/video/{{ video.id }}?autoplay=0&muted=1&controls=1&title=0&byline=0&portrait=0"
+            width="100%"
+            height="100%"
+            frameborder="0"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowfullscreen
+            loading="lazy"
+          >
+          </iframe>
+        {% endif %}
+      </div>
+    {% else %}
+      <video
+        class="video-block__video"
+        controls
+        preload="metadata"
+        muted
+        playsinline
+        {% if video.preview_image %}
+          poster="{{ video.preview_image | img_url: '800x450' }}"
+        {% endif %}
+      >
+        {% for source in video.sources %}
+          <source src="{{ source.url }}" type="{{ source.mime_type }}">
+        {% endfor %}
+        Your browser does not support the video tag.
+      </video>
+    {% endif %}
+  </div>
+{% else %}
+  <div
+    class="video-block__video"
+    style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999;"
+  >
+    <span>No video uploaded</span>
+  </div>
+{% endif %}
+
+<div class="video-block__content">
+  {% if product != blank %}
+    <div class="video-block__product-title">
+      {{ display_title | escape }}
+    </div>
+  {% else %}
+    <div class="video-block__product-title">
+      {{ display_title | escape }}
+    </div>
+    <div class="video-block__no-product" style="color: #999; font-size: 14px;">No product linked</div>
+  {% endif %}
+</div>
+{% if product != blank %}
+  </a>
+{% else %}
+  </div>
+{% endif %}
+
+<style>
+  /* Make clickable blocks behave like links */
+  .video-block--clickable {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .video-block--clickable:hover {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* Prevent video from being clickable when whole block is clickable */
+  .video-block--clickable .video-block__video-container {
+    pointer-events: none;
+  }
+
+  .video-block--clickable .video-block__video-container * {
+    pointer-events: auto;
+  }
+
+  .video-block__video-container {
+    position: relative;
+    width: 100%;
+    background: #000;
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+  }
+
+  .video-block__video-container iframe,
+  .video-block__video-container video {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px 8px 0 0;
+  }
+
+  /* Hover effect for video container */
+  .video-block:hover .video-block__video-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+    border-radius: 8px 8px 0 0;
+  }
+
+  /* Mobile video controls */
+  @media (max-width: 767px) {
+    .video-block__video {
+      min-height: 180px;
+    }
+
+    .video-block__content {
+      padding: 12px;
+    }
+
+    .video-block__product-title {
+      font-size: 14px;
+    }
+  }
+</style>

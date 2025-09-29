@@ -1,0 +1,424 @@
+{%- liquid
+  assign layout = section.settings.layout
+  assign videos_per_row = section.settings.videos_per_row
+  assign mobile_layout = 'carousel'
+
+  if section.blocks.size == 0
+    assign placeholder_blocks = true
+  else
+    assign placeholder_blocks = false
+  endif
+-%}
+
+<style>
+  .video-product-showcase {
+    position: relative;
+  }
+
+  .video-product-showcase__container {
+    position: relative;
+  }
+
+  /* Grid Layout */
+  .video-product-showcase__grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat({{ videos_per_row }}, 1fr);
+  }
+
+  @media (max-width: 1024px) {
+    .video-product-showcase__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .video-product-showcase__grid {
+      display: none;
+    }
+  }
+
+  /* Carousel Layout */
+  .video-product-showcase__carousel {
+    position: relative;
+  }
+
+  .video-product-showcase__carousel.desktop-only {
+    display: block;
+  }
+
+  .video-product-showcase__carousel.mobile-only {
+    display: none;
+  }
+
+  @media (max-width: 767px) {
+    .video-product-showcase__carousel.desktop-only {
+      display: none;
+    }
+
+    .video-product-showcase__carousel.mobile-only {
+      display: block;
+    }
+  }
+
+  .video-product-showcase__carousel .swiper-container {
+    overflow: visible;
+    padding: 0 50px;
+  }
+
+  @media (max-width: 767px) {
+    .video-product-showcase__carousel .swiper-container {
+      padding: 0 20px;
+    }
+  }
+
+  .video-product-showcase__carousel .swiper-slide {
+    width: calc(100% / {{ videos_per_row }});
+    padding: 0 10px;
+  }
+
+  @media (max-width: 1024px) {
+    .video-product-showcase__carousel .swiper-slide {
+      width: calc(100% / 3);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .video-product-showcase__carousel .swiper-slide {
+      width: calc(100% / 2);
+      padding: 0 5px;
+    }
+  }
+
+  /* Video Block Styles */
+  .video-block {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f5f5f5;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .video-block:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  }
+
+  .video-block__video {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .video-block__content {
+    padding: 15px;
+    text-align: center;
+  }
+
+  .video-block__product-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+    text-decoration: none;
+    display: block;
+  }
+
+  .video-block__product-title:hover {
+    color: #007acc;
+    text-decoration: underline;
+  }
+
+
+  /* Placeholder Styles */
+  .video-block--placeholder {
+    background: #f8f8f8;
+    border: 2px dashed #ddd;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #999;
+  }
+
+  /* Navigation Arrows */
+  .video-showcase-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.9);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+  }
+
+  .video-showcase-nav:hover {
+    background: rgba(255,255,255,1);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+
+  .video-showcase-nav--prev {
+    left: 10px;
+  }
+
+  .video-showcase-nav--next {
+    right: 10px;
+  }
+
+  .video-showcase-nav svg {
+    width: 16px;
+    height: 16px;
+  }
+</style>
+
+<div
+  class="video-product-showcase wide-container section-spacing {% if section.settings.alternate_bg_color %}use-alt-bg{% endif %}"
+  data-section-type="video-product-showcase"
+  data-cc-animate
+>
+  {% if section.settings.title != blank %}
+    <div class="section-heading" data-cc-animate>
+      <h2 class="h2">{{ section.settings.title | escape }}</h2>
+    </div>
+  {% endif %}
+
+  <div class="video-product-showcase__container">
+    {% comment %} Desktop Grid Layout {% endcomment %}
+    {% if layout == 'grid' %}
+      <div class="video-product-showcase__grid">
+        {% if placeholder_blocks %}
+          {% for i in (1..videos_per_row) %}
+            <div class="video-block video-block--placeholder">
+              <div>
+                <p>Video Block {{ i }}</p>
+                <small>Add videos with linked products</small>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          {% for block in section.blocks %}
+            {% render 'video-product-block', block: block, layout: 'grid' %}
+          {% endfor %}
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% comment %} Desktop Carousel Layout {% endcomment %}
+    {% if layout == 'carousel' %}
+      <div class="video-product-showcase__carousel desktop-only">
+        <div class="swiper-container" data-videos-per-slide="{{ videos_per_row }}">
+          <div class="swiper-wrapper">
+            {% if placeholder_blocks %}
+              {% for i in (1..videos_per_row) %}
+                <div class="swiper-slide">
+                  <div class="video-block video-block--placeholder">
+                    <div>
+                      <p>Video Block {{ i }}</p>
+                      <small>Add videos with linked products</small>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            {% else %}
+              {% for block in section.blocks %}
+                <div class="swiper-slide">
+                  {% render 'video-product-block', block: block, layout: 'carousel' %}
+                </div>
+              {% endfor %}
+            {% endif %}
+          </div>
+
+          {% if section.blocks.size > videos_per_row %}
+            <button class="video-showcase-nav video-showcase-nav--prev" aria-label="Previous video">
+              {% render 'svg-chevron-left' %}
+            </button>
+            <button class="video-showcase-nav video-showcase-nav--next" aria-label="Next video">
+              {% render 'svg-chevron-right' %}
+            </button>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% comment %} Mobile Carousel (Always shown on mobile regardless of desktop layout) {% endcomment %}
+    <div class="video-product-showcase__carousel mobile-only">
+      <div class="swiper-container" data-videos-per-slide="2">
+        <div class="swiper-wrapper">
+          {% if placeholder_blocks %}
+            {% for i in (1..4) %}
+              <div class="swiper-slide">
+                <div class="video-block video-block--placeholder">
+                  <div>
+                    <p>Video {{ i }}</p>
+                    <small>Add videos</small>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            {% for block in section.blocks %}
+              <div class="swiper-slide">
+                {% render 'video-product-block', block: block, layout: 'mobile' %}
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        {% if section.blocks.size > 2 %}
+          <button class="video-showcase-nav video-showcase-nav--prev" aria-label="Previous video">
+            {% render 'svg-chevron-left' %}
+          </button>
+          <button class="video-showcase-nav video-showcase-nav--next" aria-label="Next video">
+            {% render 'svg-chevron-right' %}
+          </button>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const videoSections = document.querySelectorAll('[data-section-type="video-product-showcase"]');
+
+    videoSections.forEach((section) => {
+      const carousels = section.querySelectorAll('.swiper-container');
+
+      carousels.forEach((carousel) => {
+        const videosPerSlide = parseInt(carousel.dataset.videosPerSlide) || 2;
+        const prevBtn = carousel.parentElement.querySelector('.video-showcase-nav--prev');
+        const nextBtn = carousel.parentElement.querySelector('.video-showcase-nav--next');
+
+        if (typeof Swiper !== 'undefined') {
+          const swiper = new Swiper(carousel, {
+            slidesPerView: videosPerSlide,
+            spaceBetween: 20,
+            loop: carousel.querySelectorAll('.swiper-slide').length > videosPerSlide,
+            navigation: {
+              nextEl: nextBtn,
+              prevEl: prevBtn,
+            },
+            breakpoints: {
+              768: {
+                slidesPerView: Math.min(videosPerSlide, 3),
+                spaceBetween: 20,
+              },
+              1024: {
+                slidesPerView: videosPerSlide,
+                spaceBetween: 20,
+              },
+            },
+          });
+        }
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Video Product Showcase",
+  "class": "section-video-product-showcase",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section heading",
+      "default": "Featured Videos"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Desktop layout",
+      "options": [
+        {
+          "value": "grid",
+          "label": "Grid"
+        },
+        {
+          "value": "carousel",
+          "label": "Carousel"
+        }
+      ],
+      "default": "grid",
+      "info": "Mobile will always show as carousel"
+    },
+    {
+      "type": "range",
+      "id": "videos_per_row",
+      "label": "Videos per row (desktop)",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 4,
+      "info": "For grid: videos per row. For carousel: videos visible at once."
+    },
+    {
+      "type": "checkbox",
+      "id": "alternate_bg_color",
+      "label": "Use alternate section color",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "video",
+      "name": "Video with Product",
+      "settings": [
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video",
+          "info": "Upload a video file or paste a YouTube/Vimeo URL"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Linked Product",
+          "info": "Select a product to link with this video"
+        },
+        {
+          "type": "text",
+          "id": "custom_title",
+          "label": "Custom video title",
+          "info": "Leave blank to use product title"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Video Product Showcase",
+      "settings": {
+        "title": "Featured Videos",
+        "layout": "grid",
+        "videos_per_row": 4
+      },
+      "blocks": [
+        {
+          "type": "video"
+        },
+        {
+          "type": "video"
+        },
+        {
+          "type": "video"
+        },
+        {
+          "type": "video"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
