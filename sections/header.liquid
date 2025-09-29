@@ -39,14 +39,17 @@
       font-size: {{ section.settings.announcement_text_size }}px;
     }
   }
+
+  .cart .cart-icon {
+    width: 24px;
+    height: 24px;
+  }
 </style>
 
 {% comment %} A hidden form to handle when the checkout button is pressed on the add to cart popup {% endcomment %}
-<form action="{{ routes.cart_url }}" method="post" id="cc-checkout-form">
-</form>
+<form action="{{ routes.cart_url }}" method="post" id="cc-checkout-form"></form>
 
 {% if template == 'gift_card' %}
-
   {% comment %} Gift card template logo {% endcomment %}
   <div itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="{{ shop.name }}">
@@ -58,10 +61,10 @@
           else
             assign logo_width = section.settings.mobile_logo_width
           endif
-          assign double_logo_width = logo_width | default: 250 | times: 2 
+          assign double_logo_width = logo_width | default: 250 | times: 2
         -%}
         {% capture img_size %}{% if double_logo_width > 2048 %}2048{% else %}{{ double_logo_width }}{% endif %}x{% endcapture %}
-        <img src="{{ section.settings.logo | img_url: img_size }}" alt="{{ shop.name | escape }}" itemprop="logo" />
+        <img src="{{ section.settings.logo | img_url: img_size }}" alt="{{ shop.name | escape }}" itemprop="logo">
       {% else %}
         {{ shop.name | escape }}
       {% endif %}
@@ -87,7 +90,7 @@
         else
           assign logo_width = section.settings.mobile_logo_width
         endif
-        assign double_logo_width = logo_width | default: 250 | times: 2 
+        assign double_logo_width = logo_width | default: 250 | times: 2
       -%}
       {% capture img_size %}{% if double_logo_width > 2048 %}2048{% else %}{{ double_logo_width }}{% endif %}x{% endcapture %}
       <img src="{{ section.settings.logo | img_url: img_size }}" alt="{{ shop.name | escape }}" itemprop="logo"
@@ -124,7 +127,7 @@
   {% endif %}
   {%- endcapture -%}
 
-  {%- capture inline_link_html-%}
+  {%- capture inline_link_html -%}
     {% if section.settings.desktop_navigation == "inline" %}
       <div class="site-control__inline-links">
         <div class="nav-row multi-level-nav reveal-on-hover" role="navigation" aria-label="{{ 'general.navigation.main_navigation_aria_label' | t | escape }}">
@@ -216,22 +219,31 @@
   {%- endcapture -%}
 
   <div data-section-type="header" itemscope itemtype="http://schema.org/Organization">
-    <div id="site-control" class="site-control inline icons
-      {% if section.settings.desktop_navigation == "inline" %}nav-inline-desktop{% endif %}
-      {% if section.settings.nav_positioning == "inline" %}scrolls-with-page{% endif %}
-      {% if section.settings.nav_positioning == "sticky" or section.settings.nav_positioning == "peek" %}fixed{% endif %}
-      {% if section.settings.nav_opacity == "opaque" %}nav-opaque{% endif %}
-      {% if section.settings.show_announcement %}has-announcement{% endif %}
-      {% if section.settings.use_alt_logo_when_active %}alt-logo-when-active{% else %}main-logo-when-active{% endif %}
-      {% if section.settings.desktop_navigation == "inline" %}{% if language_selector or country_selector %}has-localization{% endif %}{% endif %}
+    <div
+      id="site-control"
+      class="
+        site-control inline icons
+        {% if section.settings.desktop_navigation == "inline" %}nav-inline-desktop{% endif %}
+        {% if section.settings.nav_positioning == "inline" %}scrolls-with-page{% endif %}
+        {% if section.settings.nav_positioning == "sticky" or section.settings.nav_positioning == "peek" %}fixed{% endif %}
+        {% if section.settings.nav_opacity == "opaque" or section.settings.transparent_home_only and template != 'index' %}nav-opaque{% endif %}
+        {% if section.settings.show_announcement %}has-announcement{% endif %}
+        {% if section.settings.use_alt_logo_when_active %}alt-logo-when-active{% else %}main-logo-when-active{% endif %}
+        {% if section.settings.desktop_navigation == "inline" %}{% if language_selector or country_selector %}has-localization{% endif %}{% endif %}
       "
       data-cc-animate
-      data-opacity="{% if section.settings.nav_positioning == 'inline' and section.settings.nav_opacity contains 'opaque_on_scroll' %}opaque{% else %}{{ section.settings.nav_opacity }}{% endif %}"
+      data-opacity="{% if section.settings.transparent_home_only and template != 'index' %}opaque{% elsif section.settings.nav_positioning == 'inline' and section.settings.nav_opacity contains 'opaque_on_scroll' %}opaque{% else %}{{ section.settings.nav_opacity }}{% endif %}"
       data-positioning="{{ section.settings.nav_positioning }}"
     >
       {{ announcement }}
       <div class="links site-control__inner">
-        <a class="menu" href="#page-menu" aria-controls="page-menu" data-modal-nav-toggle aria-label="{{ 'layout.header.menu' | t | escape }}">
+        <a
+          class="menu"
+          href="#page-menu"
+          aria-controls="page-menu"
+          data-modal-nav-toggle
+          aria-label="{{ 'layout.header.menu' | t | escape }}"
+        >
           {% render 'icon-menu' %}
           <span class="text-link">{{ 'layout.header.menu' | t }}</span>
         </a>
@@ -241,7 +253,7 @@
         {{ inline_link_html }}
 
         <div class="nav-right-side{% if language_selector %} has-lang-selector{% endif %}{% if country_selector %} has-country-selector{% endif %}">
-          {% if section.settings.desktop_navigation == "inline" %}
+          {% if section.settings.desktop_navigation == 'inline' %}
             {% if country_selector or language_selector %}
               <div class="localization">
                 {% render 'localization', input_prefix: 'header', abbreviate_country: true %}
@@ -249,28 +261,44 @@
             {% endif %}
           {% endif %}
 
-          {% if section.settings.desktop_navigation == "inline" and shop.customer_accounts_enabled %}
+          {% if section.settings.desktop_navigation == 'inline' and shop.customer_accounts_enabled %}
             <a data-cc-animate-click href="{{ routes.account_url }}" class="nav-account">
               {{ 'layout.customer.account' | t }}
             </a>
           {% endif %}
 
-          <a class="cart nav-search"
-             href="{{ routes.search_url }}"
-             aria-label="{{ 'layout.header.search' | t | escape }}"
-             data-modal-toggle="#search-modal">
+          <a
+            class="cart nav-search"
+            href="{{ routes.search_url }}"
+            aria-label="{{ 'layout.header.search' | t | escape }}"
+            data-modal-toggle="#search-modal"
+          >
             {% render 'svg-search' %}
             <span class="text-link">{{ 'layout.header.search' | t }}</span>
           </a>
 
-          <a data-cc-animate-click class="cart cart-icon--{{ section.settings.nav_cart_icon }}" href="{{ routes.cart_url }}" aria-label="{{ 'layout.navigation.cart' | t | escape }}">
-            {% if section.settings.nav_cart_icon == "basket1" %}
-              {% render 'svg-cart' %}
-            {% elsif section.settings.nav_cart_icon == "basket2" %}
-              {% render 'svg-cart2' %}
-            {% endif %}
+          <a
+            data-cc-animate-click
+            class="cart"
+            href="{{ routes.cart_url }}"
+            aria-label="{{ 'layout.navigation.cart' | t | escape }}"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-6"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+            </svg>
+
             <div>{{ cart.item_count }}</div>
-            <span class="text-link">{{ 'layout.navigation.cart' | t }} {% if cart.item_count > 0 %}({{ cart.item_count }}){% endif %}</span>
+            <span class="text-link">
+              {{- 'layout.navigation.cart' | t }}
+              {% if cart.item_count > 0 %}({{ cart.item_count }}){% endif -%}
+            </span>
           </a>
         </div>
       </div>
@@ -285,67 +313,88 @@
             <div class="nav main-nav" role="navigation" aria-label="{{ 'layout.header.menu_aria_label' | t | escape }}">
               <ul>
                 {% for link in linklists[section.settings.menu_linklist].links %}
-                <li class="{% if link.active %}active{% endif %} {% if featured_links contains link.title %} featured-link{% endif %}">
-                  <a href="{{ link.url }}" {% if link.links != blank %}aria-haspopup="true"{% else %}data-cc-animate-click{% endif %}>
-                    <span>{{ link.title }}</span>
-                  </a>
+                  <li class="{% if link.active %}active{% endif %} {% if featured_links contains link.title %} featured-link{% endif %}">
+                    <a
+                      href="{{ link.url }}"
+                      {% if link.links != blank %}
+                        aria-haspopup="true"
+                      {% else %}
+                        data-cc-animate-click
+                      {% endif %}
+                    >
+                      <span>{{ link.title }}</span>
+                    </a>
 
-                  {% if link.links != blank %}
-                  <ul>
-                    {%- assign has_mega_drop_down = true -%}
-                    {%- if link.links != blank -%}
-                      {%- for child_link in link.links -%}
-                        {%- if child_link.links == blank -%}
+                    {% if link.links != blank %}
+                      <ul>
+                        {%- assign has_mega_drop_down = true -%}
+                        {%- if link.links != blank -%}
+                          {%- for child_link in link.links -%}
+                            {%- if child_link.links == blank -%}
+                              {%- assign has_mega_drop_down = false -%}
+                            {%- endif -%}
+                          {%- endfor -%}
+                        {%- else -%}
                           {%- assign has_mega_drop_down = false -%}
                         {%- endif -%}
-                      {%- endfor -%}
-                    {%- else -%}
-                      {%- assign has_mega_drop_down = false -%}
-                    {%- endif -%}
 
-                    {% if has_mega_drop_down %}
-                      {% comment %} Break out the mega menu with titles {% endcomment %}
-                      {% for child_link in link.links %}
-                        <li class="{% if child_link.active %}active{% endif %} main-nav__mega-title">
-                          <a href="{{ child_link.url }}" {% if child_link.links != blank %}aria-haspopup="true"{% else %}data-cc-animate-click{% endif %}>
-                            <span>{{ child_link.title }}</span>
-                          </a>
-                        </li>
+                        {% if has_mega_drop_down %}
+                          {% comment %} Break out the mega menu with titles {% endcomment %}
+                          {% for child_link in link.links %}
+                            <li class="{% if child_link.active %}active{% endif %} main-nav__mega-title">
+                              <a
+                                href="{{ child_link.url }}"
+                                {% if child_link.links != blank %}
+                                  aria-haspopup="true"
+                                {% else %}
+                                  data-cc-animate-click
+                                {% endif %}
+                              >
+                                <span>{{ child_link.title }}</span>
+                              </a>
+                            </li>
 
-                        {% for child_child_link in child_link.links %}
-                          <li class="{% if child_child_link.active %}active{% endif %} {% if featured_links contains child_child_link.title %} featured-link{% endif %}">
-                            <a data-cc-animate-click href="{{ child_child_link.url }}">
-                              <span>{{ child_child_link.title }}</span>
-                            </a>
-                          </li>
-                        {% endfor %}
-                      {% endfor %}
-
-                    {% else %}
-                      {% comment %} Render an ordinary child nav {% endcomment %}
-                      {% for child_link in link.links %}
-                      <li class="{% if child_link.active %}active{% endif %} {% if featured_links contains child_link.title %} featured-link{% endif %}">
-                        <a href="{{ child_link.url }}" {% if child_link.links != blank %}aria-haspopup="true"{% else %}data-cc-animate-click{% endif %}>
-                          <span>{{ child_link.title }}</span>
-                        </a>
-
-                        {% if child_link.links != blank %}
-                        <ul>
-                          {% for child_child_link in child_link.links %}
-                          <li class="{% if child_child_link.active %}active{% endif %} {% if featured_links contains child_child_link.title %} featured-link{% endif %}">
-                            <a data-cc-animate-click href="{{ child_child_link.url }}">
-                              <span>{{ child_child_link.title }}</span>
-                            </a>
-                          </li>
+                            {% for child_child_link in child_link.links %}
+                              <li class="{% if child_child_link.active %}active{% endif %} {% if featured_links contains child_child_link.title %} featured-link{% endif %}">
+                                <a data-cc-animate-click href="{{ child_child_link.url }}">
+                                  <span>{{ child_child_link.title }}</span>
+                                </a>
+                              </li>
+                            {% endfor %}
                           {% endfor %}
-                        </ul>
+
+                        {% else %}
+                          {% comment %} Render an ordinary child nav {% endcomment %}
+                          {% for child_link in link.links %}
+                            <li class="{% if child_link.active %}active{% endif %} {% if featured_links contains child_link.title %} featured-link{% endif %}">
+                              <a
+                                href="{{ child_link.url }}"
+                                {% if child_link.links != blank %}
+                                  aria-haspopup="true"
+                                {% else %}
+                                  data-cc-animate-click
+                                {% endif %}
+                              >
+                                <span>{{ child_link.title }}</span>
+                              </a>
+
+                              {% if child_link.links != blank %}
+                                <ul>
+                                  {% for child_child_link in child_link.links %}
+                                    <li class="{% if child_child_link.active %}active{% endif %} {% if featured_links contains child_child_link.title %} featured-link{% endif %}">
+                                      <a data-cc-animate-click href="{{ child_child_link.url }}">
+                                        <span>{{ child_child_link.title }}</span>
+                                      </a>
+                                    </li>
+                                  {% endfor %}
+                                </ul>
+                              {% endif %}
+                            </li>
+                          {% endfor %}
                         {% endif %}
-                      </li>
-                      {% endfor %}
+                      </ul>
                     {% endif %}
-                  </ul>
-                  {% endif %}
-                </li>
+                  </li>
                 {% endfor %}
               </ul>
             </div>
@@ -353,11 +402,11 @@
 
           <div class="nav-footer-links">
             {% comment %}
-            <div class="nav-footer-links__link">
-              <a class="search" href="{{ routes.search_url }}" data-modal-toggle="#search-modal">
-                {{ 'layout.header.search' | t }} <span class="arr arr--small">{% render 'svg-chevron-right' %}</span>
-              </a>
-            </div>
+              <div class="nav-footer-links__link">
+                <a class="search" href="{{ routes.search_url }}" data-modal-toggle="#search-modal">
+                  {{ 'layout.header.search' | t }} <span class="arr arr--small">{% render 'svg-chevron-right' %}</span>
+                </a>
+              </div>
             {% endcomment %}
 
             {% if shop.customer_accounts_enabled %}
@@ -379,12 +428,16 @@
 
           <div class="nav-ctas">
             {% for block in section.blocks %}
-              {% assign nav_item = "_root" %}
+              {% assign nav_item = '_root' %}
               {% if block.settings.menu_item != blank %}
                 {% assign nav_item = block.settings.menu_item %}
               {% endif %}
 
-              <div class="nav-ctas__container" data-for-nav-item="{{ nav_item | downcase }}" {{ block.shopify_attributes }}>
+              <div
+                class="nav-ctas__container"
+                data-for-nav-item="{{ nav_item | downcase }}"
+                {{ block.shopify_attributes }}
+              >
                 {% render 'nav-call-to-action', cta: block, render_li: false %}
               </div>
             {% endfor %}
@@ -393,306 +446,292 @@
       </div>
     </nav>
   </div>
-
 {% endif %}
 
-
 {% schema %}
-  {
-    "name": "Header",
-    "settings": [
-      {
-        "type": "link_list",
-        "id": "menu_linklist",
-        "label": "Menu",
-        "default": "main-menu",
-        "info": "To create a mega menu, ensure every link within your menu has child links. [Learn more](https://cleancanvas.co.uk/support/showcase/header/mega-menus)"
-      },
-      {
-        "type": "text",
-        "id": "nav_featured_link",
-        "label": "Featured link",
-        "info": "Enter the title of a link to highlight it in a different color",
-        "default": "Sale"
-      },
-      {
-        "type": "select",
-        "id": "desktop_navigation",
-        "label": "Desktop navigation",
-        "info": "For 'Show links', the navigation will automatically turn into a burger menu on smaller screens (1100px and below)",
-        "options": [
-          {
-            "value": "burger",
-            "label": "Show burger menu"
-          },
-          {
-            "value": "inline",
-            "label": "Show links"
-          }
-        ],
-        "default": "inline"
-      },
-      {
-        "type": "select",
-        "id": "nav_opacity",
-        "label": "Navigation background",
-        "options": [
-          {
-            "value": "transparent",
-            "label": "Transparent"
-          },
-          {
-            "value": "opaque_on_scroll",
-            "label": "Opaque on scroll"
-          },
-          {
-            "value": "opaque_on_scroll_alt",
-            "label": "Opaque on scroll showing contrast logo"
-          },
-          {
-            "value": "opaque",
-            "label": "Opaque"
-          }
-        ],
-        "default": "transparent"
-      },
-      {
-        "type": "select",
-        "id": "nav_positioning",
-        "label": "Scroll behavior",
-        "options": [
-          {
-            "value": "sticky",
-            "label": "Sticks on scroll"
-          },
-          {
-            "value": "inline",
-            "label": "Scrolls with the page"
-          },
-          {
-            "value": "peek",
-            "label": "Hides on scroll down"
-          }
-        ],
-        "default": "sticky"
-      },
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu_linklist",
+      "label": "Menu",
+      "default": "main-menu",
+      "info": "To create a mega menu, ensure every link within your menu has child links. [Learn more](https://cleancanvas.co.uk/support/showcase/header/mega-menus)"
+    },
+    {
+      "type": "text",
+      "id": "nav_featured_link",
+      "label": "Featured link",
+      "info": "Enter the title of a link to highlight it in a different color",
+      "default": "Sale"
+    },
+    {
+      "type": "select",
+      "id": "desktop_navigation",
+      "label": "Desktop navigation",
+      "info": "For 'Show links', the navigation will automatically turn into a burger menu on smaller screens (1100px and below)",
+      "options": [
+        {
+          "value": "burger",
+          "label": "Show burger menu"
+        },
+        {
+          "value": "inline",
+          "label": "Show links"
+        }
+      ],
+      "default": "inline"
+    },
+    {
+      "type": "select",
+      "id": "nav_opacity",
+      "label": "Navigation background",
+      "options": [
+        {
+          "value": "transparent",
+          "label": "Transparent"
+        },
+        {
+          "value": "opaque_on_scroll",
+          "label": "Opaque on scroll"
+        },
+        {
+          "value": "opaque_on_scroll_alt",
+          "label": "Opaque on scroll showing contrast logo"
+        },
+        {
+          "value": "opaque",
+          "label": "Opaque"
+        }
+      ],
+      "default": "transparent"
+    },
+    {
+      "type": "checkbox",
+      "id": "transparent_home_only",
+      "label": "Transparent on home page only",
+      "info": "When enabled, the header will be transparent only on the home page and opaque on all other pages",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "nav_positioning",
+      "label": "Scroll behavior",
+      "options": [
+        {
+          "value": "sticky",
+          "label": "Sticks on scroll"
+        },
+        {
+          "value": "inline",
+          "label": "Scrolls with the page"
+        },
+        {
+          "value": "peek",
+          "label": "Hides on scroll down"
+        }
+      ],
+      "default": "sticky"
+    },
 
-      {
-        "type": "header",
-        "content": "Logo"
-      },
-      {
-        "type": "image_picker",
-        "id": "logo",
-        "label": "Main logo",
-        "info": "520 x 200px recommended"
-      },
-      {
-        "type": "image_picker",
-        "id": "alt_logo",
-        "label": "Contrast logo",
-        "info": "Your main logo but in a different color to show over image-heavy sections. This should be the same size as your main logo."
-      },
-      {
-        "type": "range",
-        "id": "desktop_logo_width",
-        "min": 50,
-        "max": 250,
-        "step": 5,
-        "label": "Desktop logo width",
-        "default": 200,
-        "unit": "px"
-      },
-      {
-        "type": "range",
-        "id": "mobile_logo_width",
-        "min": 50,
-        "max": 150,
-        "step": 5,
-        "label": "Mobile logo width",
-        "default": 140,
-        "unit": "px"
-      },
-      {
-        "type": "checkbox",
-        "id": "use_alt_logo_when_active",
-        "label": "Show contrast logo on burger menu popup/hovering the navigation bar",
-        "default": true
-      },
-      {
-        "type": "checkbox",
-        "id": "logo_h1",
-        "label": "Make the logo an <h1> on the homepage",
-        "info": "If a section on the homepage contains a primary page heading, this should be unticked [Learn more](https://cleancanvas.co.uk/support/showcase/seo#inner-anchor-0)",
-        "default": true
-      },
-      {
-        "type": "header",
-        "content": "Announcement"
-      },
-      {
-        "type": "checkbox",
-        "id": "show_announcement",
-        "label": "Show announcement",
-        "default": false
-      },
-      {
-        "type": "checkbox",
-        "id": "announcement_home_only",
-        "label": "Show on home page only",
-        "default": false
-      },
-      {
-        "type": "text",
-        "id": "announcement_text",
-        "label": "Text"
-      },      {
-        "type": "range",
-        "id": "announcement_text_size",
-        "min": 13,
-        "max": 20,
-        "step": 1,
-        "unit": "px",
-        "label": "Text size",
-        "default": 15
-      },
-      {
-        "type": "url",
-        "id": "announcement_link",
-        "label": "Link"
-      },
-      {
-        "type": "header",
-        "content": "Cart"
-      },
-      {
-        "type": "select",
-        "id": "nav_cart_icon",
-        "label": "Icon",
-        "options": [
-          {
-            "value": "basket1",
-            "label": "Basket 1"
-          },
-          {
-            "value": "basket2",
-            "label": "Basket 2"
-          }
-        ],
-        "default": "basket1"
-      },
-      {
-        "type": "header",
-        "content": "Country/Region Selector",
-        "info": "To add a country/region, go to your [payment settings.](/admin/settings/payments)"
-      },
-      {
-        "type": "checkbox",
-        "id": "show_country_selector",
-        "label": "Enable country/region selector",
-        "default": true
-      },
-      {
-        "type": "header",
-        "content": "Language Selector",
-        "info": "To add a language, go to your [language settings.](/admin/settings/languages)"
-      },
-      {
-        "type": "checkbox",
-        "id": "show_language_selector",
-        "label": "Enable language selector",
-        "default": true
-      }
-    ],
-    "blocks": [
-      {
-        "type": "image",
-        "name": "Menu promotion",
-        "settings": [
-          {
-            "type": "text",
-            "id": "menu_item",
-            "label": "Menu item",
-            "info": "Enter a dropdown menu item title to display the menu promotion on, e.g. 'Shop'.  If you leave this empty, the menu promotion will show on the first level of the burger menu popup. [Learn more](https://cleancanvas.co.uk/support/showcase/header/mega-menus)"
-          },
-          {
-            "type": "header",
-            "content": "Promotion 1"
-          },
-          {
-            "type": "image_picker",
-            "id": "image1",
-            "label": "Image",
-            "info": "800 x 600px recommended"
-          },
-          {
-            "type": "text",
-            "id": "subheading1",
-            "label": "Subheading",
-            "default": "Subheading"
-          },
-          {
-            "type": "text",
-            "id": "title1",
-            "label": "Heading",
-            "default": "Tell your story"
-          },
-          {
-            "type": "richtext",
-            "id": "text1",
-            "label": "Text",
-            "default": "<p>Pair text with an image to tell a story</p>"
-          },
-          {
-            "type": "text",
-            "id": "button_label1",
-            "label": "Button"
-          },
-          {
-            "type": "url",
-            "id": "cta_link1",
-            "label": "Link"
-          },
-          {
-            "type": "header",
-            "content": "Promotion 2"
-          },
-          {
-            "type": "image_picker",
-            "id": "image2",
-            "label": "Image",
-            "info": "800 x 600px recommended"
-          },
-          {
-            "type": "text",
-            "id": "subheading2",
-            "label": "Subheading",
-            "default": "Subheading"
-          },
-          {
-            "type": "text",
-            "id": "title2",
-            "label": "Heading",
-            "default": "Tell your story"
-          },
-          {
-            "type": "richtext",
-            "id": "text2",
-            "label": "Text",
-            "default": "<p>Pair text with an image to tell a story</p>"
-          },
-          {
-            "type": "text",
-            "id": "button_label2",
-            "label": "Button"
-          },
-          {
-            "type": "url",
-            "id": "cta_link2",
-            "label": "Link"
-          }
-        ]
-      }
-    ]
-  }
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Main logo",
+      "info": "520 x 200px recommended"
+    },
+    {
+      "type": "image_picker",
+      "id": "alt_logo",
+      "label": "Contrast logo",
+      "info": "Your main logo but in a different color to show over image-heavy sections. This should be the same size as your main logo."
+    },
+    {
+      "type": "range",
+      "id": "desktop_logo_width",
+      "min": 50,
+      "max": 250,
+      "step": 5,
+      "label": "Desktop logo width",
+      "default": 200,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_logo_width",
+      "min": 50,
+      "max": 150,
+      "step": 5,
+      "label": "Mobile logo width",
+      "default": 140,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_alt_logo_when_active",
+      "label": "Show contrast logo on burger menu popup/hovering the navigation bar",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "logo_h1",
+      "label": "Make the logo an <h1> on the homepage",
+      "info": "If a section on the homepage contains a primary page heading, this should be unticked [Learn more](https://cleancanvas.co.uk/support/showcase/seo#inner-anchor-0)",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Announcement"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_announcement",
+      "label": "Show announcement",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "announcement_home_only",
+      "label": "Show on home page only",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "announcement_text",
+      "label": "Text"
+    },
+    {
+      "type": "range",
+      "id": "announcement_text_size",
+      "min": 13,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Text size",
+      "default": 15
+    },
+    {
+      "type": "url",
+      "id": "announcement_link",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Country/Region Selector",
+      "info": "To add a country/region, go to your [payment settings.](/admin/settings/payments)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_country_selector",
+      "label": "Enable country/region selector",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Language Selector",
+      "info": "To add a language, go to your [language settings.](/admin/settings/languages)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_language_selector",
+      "label": "Enable language selector",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Menu promotion",
+      "settings": [
+        {
+          "type": "text",
+          "id": "menu_item",
+          "label": "Menu item",
+          "info": "Enter a dropdown menu item title to display the menu promotion on, e.g. 'Shop'.  If you leave this empty, the menu promotion will show on the first level of the burger menu popup. [Learn more](https://cleancanvas.co.uk/support/showcase/header/mega-menus)"
+        },
+        {
+          "type": "header",
+          "content": "Promotion 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "image1",
+          "label": "Image",
+          "info": "800 x 600px recommended"
+        },
+        {
+          "type": "text",
+          "id": "subheading1",
+          "label": "Subheading",
+          "default": "Subheading"
+        },
+        {
+          "type": "text",
+          "id": "title1",
+          "label": "Heading",
+          "default": "Tell your story"
+        },
+        {
+          "type": "richtext",
+          "id": "text1",
+          "label": "Text",
+          "default": "<p>Pair text with an image to tell a story</p>"
+        },
+        {
+          "type": "text",
+          "id": "button_label1",
+          "label": "Button"
+        },
+        {
+          "type": "url",
+          "id": "cta_link1",
+          "label": "Link"
+        },
+        {
+          "type": "header",
+          "content": "Promotion 2"
+        },
+        {
+          "type": "image_picker",
+          "id": "image2",
+          "label": "Image",
+          "info": "800 x 600px recommended"
+        },
+        {
+          "type": "text",
+          "id": "subheading2",
+          "label": "Subheading",
+          "default": "Subheading"
+        },
+        {
+          "type": "text",
+          "id": "title2",
+          "label": "Heading",
+          "default": "Tell your story"
+        },
+        {
+          "type": "richtext",
+          "id": "text2",
+          "label": "Text",
+          "default": "<p>Pair text with an image to tell a story</p>"
+        },
+        {
+          "type": "text",
+          "id": "button_label2",
+          "label": "Button"
+        },
+        {
+          "type": "url",
+          "id": "cta_link2",
+          "label": "Link"
+        }
+      ]
+    }
+  ]
+}
 {% endschema %}

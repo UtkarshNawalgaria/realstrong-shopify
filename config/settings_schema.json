@@ -4,8 +4,8 @@
     "theme_name": "Showcase",
     "theme_author": "Clean Canvas",
     "theme_version": "8.0.0",
-    "theme_documentation_url": "https:\/\/support.cleancanvas.co.uk\/showcase-theme-support\/",
-    "theme_support_url": "https:\/\/support.cleancanvas.co.uk\/showcase-theme-support\/"
+    "theme_documentation_url": "https://support.cleancanvas.co.uk/showcase-theme-support/",
+    "theme_support_url": "https://support.cleancanvas.co.uk/showcase-theme-support/"
   },
   {
     "name": "Colors",
@@ -539,7 +539,7 @@
       },
       {
         "type": "paragraph",
-        "content": "This indicates the color of the product variants. [Learn more](https:\/\/cleancanvas.co.uk\/support\/general\/swatches)"
+        "content": "This indicates the color of the product variants. [Learn more](https://cleancanvas.co.uk/support/general/swatches)"
       },
       {
         "type": "text",
@@ -838,7 +838,7 @@
         "type": "text",
         "id": "social_spotify_url",
         "label": "Spotify",
-        "info": "https:\/\/open.spotify.com\/artist\/shopify"
+        "info": "https://open.spotify.com/artist/shopify"
       },
       {
         "type": "text",
@@ -910,7 +910,7 @@
     ]
   },
   {
-  "name": "Blog Cards",
+    "name": "Blog Cards",
     "settings": [
       {
         "type": "checkbox",
