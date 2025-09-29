@@ -1,6 +1,6 @@
 {%- liquid
   if animation_type == blank
-    assign animation_type = "cc-fade-in-up"
+    assign animation_type = 'cc-fade-in-up'
   endif
 
   unless image
@@ -10,8 +10,13 @@
   endunless
 -%}
 
-<div class="product-block collection-block hover-{{ settings.collection_hover_effect }} {{ product_class }}" data-loop-index="{{ i }}"
-     {% if animate %}data-cc-animate="{{ animation_type }}" data-cc-animate-delay="{{ animate | times: 0.1 }}s" {% endif %}>
+<div
+  class="product-block collection-block hover-{{ settings.collection_hover_effect }} {{ product_class }}"
+  data-loop-index="{{ i }}"
+  {% if animate %}
+    data-cc-animate="{{ animation_type }}" data-cc-animate-delay="{{ animate | times: 0.1 }}s"
+  {% endif %}
+>
   <div class="product-block__inner">
     <div class="image">
       {% if image == blank %}
@@ -19,7 +24,12 @@
           <div class="placeholder-image">{{ 'collection-1' | placeholder_svg_tag }}</div>
         </div>
       {% else %}
-        <a data-cc-animate-click class="image-inner" href="{{ collection.url }}" aria-label="{{ collection.title | escape }}">
+        <a
+          data-cc-animate-click
+          class="image-inner"
+          href="{{ collection.url }}"
+          aria-label="{{ collection.title | escape }}"
+        >
           {% render 'responsive-image', image: image %}
         </a>
       {% endif %}

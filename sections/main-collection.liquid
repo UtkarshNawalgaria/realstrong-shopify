@@ -5,29 +5,41 @@
     assign results_url = collection.url
   endif
 
-  if results_url contains "?"
-    assign results_url = results_url | split: "?" | first
+  if results_url contains '?'
+    assign results_url = results_url | split: '?' | first
   endif
 
   assign current_sort_by = collection.sort_by | default: collection.default_sort_by
 -%}
 
-<div data-section-type="collection-template"
-     data-ajax-filtering="{{ section.settings.ajax_products }}"
-     data-components="tabs,product-block,price-range,accordion,sticky-scroll-direction"
-     class="pb-medium {% if section.settings.show_collection_image and collection.featured_image %}header-overlap-section{% elsif section.settings.show_collection_content %}pt-medium{% else %}sm:pt-medium{% endif %}" data-cc-animate>
-
+<div
+  data-section-type="collection-template"
+  data-ajax-filtering="{{ section.settings.ajax_products }}"
+  data-components="tabs,product-block,price-range,accordion,sticky-scroll-direction"
+  data-filter-mode="{{ section.settings.filter_mode }}"
+  class="pb-medium {% if section.settings.show_collection_image and collection.featured_image %}header-overlap-section{% elsif section.settings.show_collection_content %}pt-medium{% else %}sm:pt-medium{% endif %}"
+  data-cc-animate
+>
   {% paginate collection.products by section.settings.products_per_page %}
     {% if section.settings.show_collection_image and collection.featured_image %}
       <div class="collection-header image-overlay image-overlay--bg-full needs-alt-logo">
-        <div class="rimage-outer-wrapper rimage-background lazyload fade-in"
-             data-cc-animate="cc-fade-in-zoom-out"
-             data-bgset="{% render 'bgset', image: collection.featured_image %}"
-             data-sizes="auto"
-             data-parent-fit="cover">
+        <div
+          class="rimage-outer-wrapper rimage-background lazyload fade-in"
+          data-cc-animate="cc-fade-in-zoom-out"
+          data-bgset="{% render 'bgset', image: collection.featured_image %}"
+          data-sizes="auto"
+          data-parent-fit="cover"
+        >
           <noscript>
-            <div class="rimage-wrapper" style="padding-top:{{ 1 | divided_by: collection.featured_image.aspect_ratio | times: 100 }}%">
-              <img src="{{ collection.featured_image | img_url: '1024x1024' }}" alt="{{ collection.featured_image.alt | escape }}" class="rimage__image">
+            <div
+              class="rimage-wrapper"
+              style="padding-top:{{ 1 | divided_by: collection.featured_image.aspect_ratio | times: 100 }}%"
+            >
+              <img
+                src="{{ collection.featured_image | img_url: '1024x1024' }}"
+                alt="{{ collection.featured_image.alt | escape }}"
+                class="rimage__image"
+              >
             </div>
           </noscript>
         </div>
@@ -36,40 +48,125 @@
           <div class="overlay__content">
     {% endif %}
 
-      <div class="central">
-        <div class="content transparent">
-          {% if section.settings.show_collection_content %}
-            {% if collection.description != blank %}
-              <h1 class="line-1 feature-header" data-cc-animate>{{ collection.title }}</h1>
+    <div class="central">
+      <div class="content transparent">
+        {% if section.settings.show_collection_content %}
+          {% if collection.description != blank %}
+            <h1 class="line-1 feature-header" data-cc-animate>{{ collection.title }}</h1>
 
-              {% if section.settings.description_position == "top" %}
-                <div class="line-2 rte" data-cc-animate data-cc-animate-delay="0.2s">
-                  {{ collection.description }}
-                </div>
-              {% endif %}
-            {% else %}
-              <h1 class="line-1 feature-header no-margin" data-cc-animate>{{ collection.title }}</h1>
+            {% if section.settings.description_position == 'top' %}
+              <div class="line-2 rte" data-cc-animate data-cc-animate-delay="0.2s">
+                {{ collection.description }}
+              </div>
             {% endif %}
+          {% else %}
+            <h1 class="line-1 feature-header no-margin" data-cc-animate>{{ collection.title }}</h1>
           {% endif %}
-        </div>
+        {% endif %}
       </div>
+    </div>
 
     {% if section.settings.show_collection_image and collection.featured_image %}
-          </div>
-        </div>
+      </div>
+      </div>
       </div>
     {% endif %}
 
-    {% render "search-filter",
-      mode: "collection",
+    {% comment %} Filter drawer button {% endcomment %}
+    {% if section.settings.filter_mode == 'drawer' %}
+      {% assign has_filters = false %}
+      {% for filter in collection.filters %}
+        {% case filter.type %}
+          {% when 'list' %}
+            {% for value in filter.values %}
+              {% if value.count > 0 %}
+                {% assign has_filters = true %}
+                {% break %}
+              {% endif %}
+            {% endfor %}
+          {% when 'price_range' %}
+            {% assign has_filters = true %}
+            {% break %}
+        {% endcase %}
+        {% if has_filters %}
+          {% break %}
+        {% endif %}
+      {% endfor %}
+
+      {% if has_filters %}
+        <div class="wide-container filter-drawer-controls" data-cc-animate data-cc-animate-delay="0.6s">
+          <div class="filter-drawer-header">
+            <button
+              class="filter-drawer-toggle btn btn--secondary"
+              data-filter-drawer-toggle
+              aria-label="Open filters"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 4.5H21V6H3V4.5ZM9 11.25H21V12.75H9V11.25ZM3 18H15V19.5H3V18Z" fill="currentColor"/>
+              </svg>
+              <span>Filters</span>
+              <span class="filter-count" data-filter-count></span>
+            </button>
+          </div>
+        </div>
+
+        {% comment %} Hidden drawer container with pre-rendered filters {% endcomment %}
+        <div class="filter-drawer-container" data-filter-drawer-container style="display: none;">
+          <div class="filter-drawer-overlay" data-filter-drawer-overlay></div>
+          <div class="filter-drawer" data-filter-drawer>
+            <div class="filter-drawer-header-bar">
+              <h3 class="filter-drawer-title">Filters</h3>
+              <button class="filter-drawer-close" data-filter-drawer-close aria-label="Close filters">×</button>
+            </div>
+            <div class="filter-drawer-content">
+              <form id="FilterDrawerForm" action="{{ results_url }}" method="get" data-ajax-container>
+                {% assign drawer_mode = 'collection' %}
+                {% assign drawer_translation_sort_title = 'collections.sorting.title' | t %}
+                {% assign drawer_translation_submit_button = 'collections.filtering.submit' | t %}
+
+                {% capture drawer_form_hidden_fields %}
+                  {%- if collection.current_vendor or collection.current_type -%}
+                    <input type="hidden" name="q" value="{{ collection.current_vendor }}{{ collection.current_type }}">
+                  {%- endif -%}
+                  {%- if section.settings.enable_sorting == false -%}
+                    <input type="hidden" name="sort_by" value="{{ current_sort_by }}">
+                  {%- endif -%}
+                {% endcapture %}
+
+                {% render 'filter-content',
+                  results: collection,
+                  section: section,
+                  current_sort_by: current_sort_by,
+                  form_hidden_fields: drawer_form_hidden_fields,
+                  translation_sort_title: drawer_translation_sort_title,
+                  translation_submit_button: drawer_translation_submit_button,
+                  show_filters: has_filters
+                %}
+              </form>
+            </div>
+            <div class="filter-drawer-footer">
+              <button class="filter-drawer-clear" data-filter-drawer-clear-all>Clear All</button>
+              <button class="filter-drawer-apply" data-filter-drawer-apply>Apply Filters</button>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+
+    {% render 'search-filter',
+      mode: 'collection',
       results: collection,
       section: section,
       results_url: results_url,
       paginate: paginate,
-      current_sort_by: current_sort_by
+      current_sort_by: current_sort_by,
+      enable_related_colors: section.settings.enable_related_colors
     %}
 
-    {% if collection.description != blank and section.settings.description_position == "bottom" and section.settings.show_collection_content == true %}
+    {% if collection.description != blank
+      and section.settings.description_position == 'bottom'
+      and section.settings.show_collection_content == true
+    %}
       <div class="central footer">
         <div class="content transparent">
           <div class="rte">
@@ -81,218 +178,610 @@
   {% endpaginate %}
 </div>
 
+<style>
+  /* Filter Drawer Styles */
+  .filter-drawer-controls {
+    margin-bottom: 20px;
+  }
+
+  .filter-drawer-header {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .filter-drawer-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #333;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .filter-drawer-toggle:hover {
+    background: #f5f5f5;
+    border-color: #ccc;
+  }
+
+  .filter-drawer-toggle svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .filter-count {
+    background: #007acc;
+    color: white;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    min-width: 20px;
+    text-align: center;
+    display: none;
+  }
+
+  .filter-count.has-filters {
+    display: inline-block;
+  }
+
+  /* Filter Drawer Overlay and Container */
+  .filter-drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .filter-drawer-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .filter-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 450px;
+    height: 100%;
+    background: #fff;
+    z-index: 10000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .filter-drawer.active {
+    transform: translateX(0);
+  }
+
+  .filter-drawer-header-bar {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    background: #f8f8f8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .filter-drawer-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  .filter-drawer-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+  }
+
+  .filter-drawer-close:hover {
+    background: #e0e0e0;
+  }
+
+  .filter-drawer-content {
+    padding: 20px;
+  }
+
+  /* Filter item styling to match sidebar */
+  .filter-drawer .cc-checkbox {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .filter-drawer .cc-checkbox {
+      margin-bottom: 8px;
+    }
+  }
+
+  .filter-drawer .cc-checkbox__label {
+    flex-grow: 1;
+    word-break: break-word;
+  }
+
+  .filter-drawer .cc-checkbox__count {
+    font-size: 0.9em;
+    opacity: 0.8;
+    padding-left: 1em;
+    margin-left: auto;
+  }
+
+  .filter-drawer-footer {
+    padding: 20px;
+    border-top: 1px solid #eee;
+    background: #f8f8f8;
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    gap: 10px;
+  }
+
+  .filter-drawer-apply {
+    flex: 1;
+    padding: 12px 20px;
+    background: #007acc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+
+  .filter-drawer-apply:hover {
+    background: #005999;
+  }
+
+  .filter-drawer-clear {
+    padding: 12px 20px;
+    background: transparent;
+    color: #666;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .filter-drawer-clear:hover {
+    background: #f5f5f5;
+    border-color: #ccc;
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 767px) {
+    .filter-drawer {
+      width: 92%;
+      max-width: 400px;
+    }
+
+    .filter-drawer-header-bar {
+      padding: 15px;
+    }
+
+    .filter-drawer-content {
+      padding: 15px;
+    }
+
+    .filter-drawer-footer {
+      padding: 15px;
+    }
+  }
+
+  /* Hide drawer controls when not in drawer mode */
+  [data-filter-mode]:not([data-filter-mode='drawer']) .filter-drawer-controls {
+    display: none;
+  }
+
+  /* Body scroll lock when drawer is open */
+  body.filter-drawer-open {
+    overflow: hidden;
+  }
+
+  /* Hide sidebar filters when in drawer mode */
+  .cc-product-filter--hidden {
+    display: none !important;
+  }
+
+  /* Container adjustments for drawer mode */
+  .product-list-container--with-drawer {
+    /* Full width when using drawer */
+    width: 100%;
+  }
+
+  /* Hide mobile filter button when in drawer mode */
+  .filter-mode-drawer .footer-button-xs {
+    display: none;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Filter drawer functionality
+    const filterToggle = document.querySelector('[data-filter-drawer-toggle]');
+    const filterCountElement = document.querySelector('[data-filter-count]');
+    const drawerContainer = document.querySelector('[data-filter-drawer-container]');
+
+    if (filterToggle && drawerContainer) {
+      const overlay = drawerContainer.querySelector('[data-filter-drawer-overlay]');
+      const drawer = drawerContainer.querySelector('[data-filter-drawer]');
+      const closeButton = drawerContainer.querySelector('[data-filter-drawer-close]');
+      const applyButton = drawerContainer.querySelector('[data-filter-drawer-apply]');
+      const clearButton = drawerContainer.querySelector('[data-filter-drawer-clear-all]');
+      const drawerForm = drawerContainer.querySelector('#FilterDrawerForm');
+      const mainForm = document.querySelector('.cc-product-filter #FacetsForm');
+
+      // Event listeners
+      filterToggle.addEventListener('click', openDrawer);
+      if (overlay) overlay.addEventListener('click', closeDrawer);
+      if (closeButton) closeButton.addEventListener('click', closeDrawer);
+      if (applyButton) applyButton.addEventListener('click', closeDrawer);
+
+      // Update filter count on page load and after AJAX
+      updateFilterCount();
+
+      // Listen for AJAX filter updates
+      document.addEventListener('theme:filter:updated', updateFilterCount);
+
+      function openDrawer() {
+        drawerContainer.style.display = 'block';
+        // Small delay to ensure display is applied before adding active classes
+        setTimeout(function () {
+          overlay.classList.add('active');
+          drawer.classList.add('active');
+          document.body.classList.add('filter-drawer-open');
+        }, 10);
+      }
+
+      function closeDrawer() {
+        overlay.classList.remove('active');
+        drawer.classList.remove('active');
+        document.body.classList.remove('filter-drawer-open');
+        // Hide after animation completes
+        setTimeout(function () {
+          drawerContainer.style.display = 'none';
+        }, 300);
+      }
+
+      function updateFilterCount() {
+        const activeFilters = document.querySelectorAll('.active-filter-controls__tag');
+
+        if (filterCountElement) {
+          if (activeFilters.length > 0) {
+            filterCountElement.textContent = activeFilters.length;
+            filterCountElement.classList.add('has-filters');
+          } else {
+            filterCountElement.textContent = '';
+            filterCountElement.classList.remove('has-filters');
+          }
+        }
+      }
+
+      // Handle filter form submission in drawer
+      if (drawerForm) {
+        drawerForm.addEventListener('change', function (e) {
+          // Auto-submit the drawer form for AJAX filtering
+          if (e.target.name && e.target.name !== 'sort_by') {
+            // Small delay to ensure the input change is registered
+            setTimeout(function () {
+              // Create a FormData object and submit via AJAX
+              const formData = new FormData(drawerForm);
+              const params = new URLSearchParams(formData);
+              const url = drawerForm.action + '?' + params.toString();
+
+              // Use the theme's AJAX system if available, otherwise fallback to fetch
+              if (window.theme && window.theme.ajaxifyCollectionPages) {
+                // Let the theme handle AJAX updates
+                window.location.href = url;
+              } else {
+                // Fallback: navigate to filtered URL
+                window.location.href = url;
+              }
+            }, 50);
+          }
+        });
+
+        // Handle sorting separately with immediate submission
+        drawerForm.addEventListener('change', function (e) {
+          if (e.target.name === 'sort_by') {
+            drawerForm.submit();
+          }
+        });
+      }
+
+      // Handle clear all button
+      if (clearButton) {
+        clearButton.addEventListener('click', function () {
+          // Navigate to collection URL without filters
+          const baseUrl = drawerForm.action;
+          window.location.href = baseUrl;
+        });
+      }
+
+      // Escape key to close drawer
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && drawer.classList.contains('active')) {
+          closeDrawer();
+        }
+      });
+    }
+  });
+</script>
 
 {% schema %}
-  {
-    "name": "Collection pages",
-    "class": "theme-filter-container",
-    "settings": [
-      {
-        "type": "header",
-        "content": "Header"
-      },
-      {
-        "type": "checkbox",
-        "id": "show_collection_content",
-        "label": "Show collection title/description",
-        "default": true
-      },
-      {
-        "type": "checkbox",
-        "id": "show_collection_image",
-        "label": "Show collection image",
-        "default": true
-      },
-      {
-        "type": "select",
-        "id": "description_position",
-        "label": "Description position",
-        "options": [
-          {
-            "value": "top",
-            "label": "Top"
-          },
-          {
-            "value": "bottom",
-            "label": "Bottom"
-          }
-        ]
-      },
-      {
-        "type": "header",
-        "content": "GRID"
-      },
-      {
-        "type": "select",
-        "id": "layout",
-        "label": "Layout",
-        "options": [
-          {
-            "value": "columns",
-            "label": "Collage"
-          },
-          {
-            "value": "rows",
-            "label": "Grid"
-          }
-        ],
-        "default": "rows",
-        "info": "Collage will only work when the 'Image shape' is set to Natural - in Products / Image shape"
-      },
-      {
-        "type": "range",
-        "id": "grid",
-        "label": "Desktop products per row",
-        "min": 2,
-        "max": 4,
-        "default": 3
-      },
-      {
-        "type": "select",
-        "id": "grid_mobile",
-        "label": "Mobile products per row",
-        "options": [
-          {
-            "value": "1",
-            "label": "1"
-          },
-          {
-            "value": "2",
-            "label": "2"
-          }
-        ],
-        "default": "2"
-      },
-      {
-        "type": "range",
-        "id": "products_per_page",
-        "label": "Products per page",
-        "min": 12,
-        "max": 48,
-        "step": 6,
-        "default": 18
-      },
-      {
-        "type": "checkbox",
-        "id": "enable_infinite_scroll",
-        "label": "Enable infinite-scroll",
-        "default": true,
-        "info": "As visitors scroll down, more products are loaded in automatically."
-      },
-      {
-        "type": "checkbox",
-        "id": "show_vendor",
-        "label": "Show product vendor",
-        "default": false
-      },
-      {
-        "type": "header",
-        "content": "FILTERS"
-      },
-      {
-        "type": "paragraph",
-        "content": "To create the collection filters, go to your [navigation](\/admin\/menus) page."
-      },
-      {
-        "type": "checkbox",
-        "id": "show_filter_counts",
-        "label": "Show filter counts",
-        "default": false
-      },
-      {
-        "type": "checkbox",
-        "id": "show_filter_deadends",
-        "label": "Show filters with zero results",
-        "default": true
-      },
-      {
-        "type": "checkbox",
-        "id": "ajax_products",
-        "label": "Filter and sort without reloading the page",
-        "default": true,
-        "info": "Some apps require this to be disabled"
-      },
-      {
-        "type": "radio",
-        "id": "filter_mode",
-        "label": "Filter mode",
-        "default": "sidebar",
-        "options": [
-          {
-            "value": "none",
-            "label": "None"
-          },
-          {
-            "value": "simple",
-            "label": "Simple"
-          },
-          {
-            "value": "sidebar",
-            "label": "Sidebar"
-          }
-        ],
-        "info": "'Simple' is only recommended if you have a small number of filters. Note, it doesn't allow for multiple options within a filter to be selected and it won't show the price range filter."
-      },
-      {
-        "type": "header",
-        "content": "Sidebar Settings"
-      },
-      {
-        "type": "checkbox",
-        "id": "sticky_sidebar",
-        "label": "Stick the sidebar on scroll",
-        "default": true
-      },
-      {
-        "type": "select",
-        "id": "collapse_filters_method",
-        "label": "Filter group collapse",
-        "default": "none",
-        "options": [
-          {
-            "value": "none",
-            "label": "None"
-          },
-          {
-            "value": "over-6",
-            "label": "Over 6 items"
-          },
-          {
-            "value": "over-12",
-            "label": "Over 12 items"
-          },
-          {
-            "value": "over-18",
-            "label": "Over 18 items"
-          },
-          {
-            "value": "all",
-            "label": "All"
-          }
-        ]
-      },
-      {
-        "type": "checkbox",
-        "id": "collapse_sort_by",
-        "label": "Collapse 'Sort by' filter group",
-        "default": false
-      },
-      {
-        "type": "header",
-        "content": "Sorting"
-      },
-      {
-        "type": "checkbox",
-        "id": "enable_sorting",
-        "label": "Enable sorting",
-        "default": true
-      },
-      {
-        "type": "checkbox",
-        "id": "show_featured_in_sort",
-        "label": "Show 'Featured' option in sorting dropdown",
-        "default": false
-      }
-    ]
-  }
+{
+  "name": "Collection pages",
+  "class": "theme-filter-container",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_content",
+      "label": "Show collection title/description",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_image",
+      "label": "Show collection image",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "description_position",
+      "label": "Description position",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "GRID"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        {
+          "value": "columns",
+          "label": "Collage"
+        },
+        {
+          "value": "rows",
+          "label": "Grid"
+        }
+      ],
+      "default": "rows",
+      "info": "Collage will only work when the 'Image shape' is set to Natural - in Products / Image shape"
+    },
+    {
+      "type": "range",
+      "id": "grid",
+      "label": "Desktop products per row",
+      "min": 2,
+      "max": 6,
+      "default": 3,
+      "step": 1
+    },
+    {
+      "type": "select",
+      "id": "grid_mobile",
+      "label": "Mobile products per row",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 12,
+      "max": 48,
+      "step": 6,
+      "default": 18
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_infinite_scroll",
+      "label": "Enable infinite-scroll",
+      "default": true,
+      "info": "As visitors scroll down, more products are loaded in automatically."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show product vendor",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "FILTERS"
+    },
+    {
+      "type": "paragraph",
+      "content": "To create the collection filters, go to your [navigation](\/admin\/menus) page."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter_counts",
+      "label": "Show filter counts",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter_deadends",
+      "label": "Show filters with zero results",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "ajax_products",
+      "label": "Filter and sort without reloading the page",
+      "default": true,
+      "info": "Some apps require this to be disabled"
+    },
+    {
+      "type": "radio",
+      "id": "filter_mode",
+      "label": "Filter mode",
+      "default": "sidebar",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "simple",
+          "label": "Simple"
+        },
+        {
+          "value": "sidebar",
+          "label": "Sidebar"
+        },
+        {
+          "value": "drawer",
+          "label": "Drawer"
+        }
+      ],
+      "info": "'Simple' is only recommended if you have a small number of filters. Note, it doesn't allow for multiple options within a filter to be selected and it won't show the price range filter."
+    },
+    {
+      "type": "header",
+      "content": "Related Products Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_related_colors",
+      "label": "Enable related products",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "related_products_limit",
+      "label": "Related products limit",
+      "default": 6,
+      "min": 1,
+      "max": 10
+    },
+    {
+      "type": "select",
+      "id": "color_swatch_shape",
+      "label": "Color swatch shape",
+      "default": "square",
+      "options": [
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "round",
+          "label": "Round"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Sidebar Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_sidebar",
+      "label": "Stick the sidebar on scroll",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "collapse_filters_method",
+      "label": "Filter group collapse",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "over-6",
+          "label": "Over 6 items"
+        },
+        {
+          "value": "over-12",
+          "label": "Over 12 items"
+        },
+        {
+          "value": "over-18",
+          "label": "Over 18 items"
+        },
+        {
+          "value": "all",
+          "label": "All"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "collapse_sort_by",
+      "label": "Collapse 'Sort by' filter group",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Sorting"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sorting",
+      "label": "Enable sorting",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_featured_in_sort",
+      "label": "Show 'Featured' option in sorting dropdown",
+      "default": false
+    }
+  ]
+}
 {% endschema %}

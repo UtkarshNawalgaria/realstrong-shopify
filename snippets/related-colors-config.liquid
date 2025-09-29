@@ -1,0 +1,66 @@
+{% comment %}
+  Related Product Colors Configuration
+
+  Centralized configuration for related product color swatches
+  This allows easy customization without modifying core logic
+
+  Returns configuration object via assigns
+{% endcomment %}
+
+{%- liquid
+  # Global configuration for related product colors
+  assign related_colors_config = shop.metafields.custom.related_colors_config.value
+
+  # Default settings (can be overridden by shop metafields)
+  assign default_swatch_limit = 6
+  assign default_swatch_size = 'medium'
+  assign default_show_current = true
+  assign default_enable_hover = true
+  assign default_animation_speed = 300
+
+  # Shop-level overrides (if metafields exist)
+  if related_colors_config != blank
+    assign swatch_limit = related_colors_config.swatch_limit | default: default_swatch_limit
+    assign swatch_size = related_colors_config.swatch_size | default: default_swatch_size
+    assign show_current_product = related_colors_config.show_current | default: default_show_current
+    assign enable_hover_preview = related_colors_config.enable_hover | default: default_enable_hover
+    assign animation_speed = related_colors_config.animation_speed | default: default_animation_speed
+  else
+    assign swatch_limit = default_swatch_limit
+    assign swatch_size = default_swatch_size
+    assign show_current_product = default_show_current
+    assign enable_hover_preview = default_enable_hover
+    assign animation_speed = default_animation_speed
+  endif
+
+  # Feature flags
+  assign enable_related_colors = true
+  assign enable_analytics_tracking = false
+  assign enable_preload_images = true
+
+  # Responsive breakpoints
+  assign mobile_swatch_limit = swatch_limit | at_most: 4
+  assign tablet_swatch_limit = swatch_limit | at_most: 5
+
+  # Touch device optimizations
+  assign touch_friendly_size = true
+  assign scroll_snap_enabled = false
+
+  # Error handling settings
+  assign fallback_color = '#cccccc'
+  assign show_debug_info = false
+-%}
+
+{%- comment -%}
+  Configuration is now available via liquid assigns:
+  - swatch_limit
+  - swatch_size
+  - show_current_product
+  - enable_hover_preview
+  - animation_speed
+  - enable_related_colors
+  - mobile_swatch_limit
+  - tablet_swatch_limit
+  - fallback_color
+  - show_debug_info
+{%- endcomment -%}

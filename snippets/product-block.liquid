@@ -1,4 +1,4 @@
-{%- liquid
+{% liquid
   assign cheapest_variant = product.variants | sort: 'price' | first
 
   assign on_sale = false
@@ -6,10 +6,10 @@
     assign on_sale = true
   endif
 
-  assign product_url = product.url | within: collection
+  assign product_url = product.url
 
   if animation_type == blank
-    assign animation_type = "cc-fade-in-up"
+    assign animation_type = 'cc-fade-in-up'
   endif
 
   assign product_has_swatches = false
@@ -25,7 +25,7 @@
   assign primary_image = product.featured_media.preview_image
   assign product_images = product.media | where: 'media_type', 'image'
 
-  if settings.prod_hover == "second_image"
+  if settings.prod_hover == 'second_image'
     assign secondary_image = product.media[1].preview_image
 
     for media in product_images offset: 1
@@ -40,10 +40,10 @@
     endfor
   endif
 
-  if settings.prod_hover == "all_images" or product_has_swatches
+  if settings.prod_hover == 'all_images' or product_has_swatches
     assign active_media_found = false
-    assign images_before_featured = ""
-    assign images_after_featured = ""
+    assign images_before_featured = ''
+    assign images_after_featured = ''
 
     for media in product_images
       if media.id == product.featured_media.id
@@ -52,20 +52,20 @@
 
       assign image_placeholder = media | img_url: '1x1' | replace: '_1x1.', '_{width}x.'
       if active_media_found
-        assign images_after_featured = images_after_featured | append: "," | append: image_placeholder
+        assign images_after_featured = images_after_featured | append: ',' | append: image_placeholder
       else
-        assign images_before_featured = images_before_featured | append: "," | append: image_placeholder
+        assign images_before_featured = images_before_featured | append: ',' | append: image_placeholder
       endif
     endfor
 
-    assign card_images = images_after_featured | append: images_before_featured | replace: ",,", "," | remove_first: ","
+    assign card_images = images_after_featured | append: images_before_featured | replace: ',,', ',' | remove_first: ','
   endif
 
   if settings.prod_show_videos
-    assign videos = product.media | where: "media_type", "video"
+    assign videos = product.media | where: 'media_type', 'video'
     unless videos == blank
       for source in videos[0].sources
-        if source != blank and source.format == "mp4"
+        if source != blank and source.format == 'mp4'
           assign video_source = source
           break
         endif
@@ -75,31 +75,33 @@
     endunless
   endif
 
-  assign param_symbol = "?"
-  if product.url contains "?"
-    assign param_symbol = "&"
+  assign param_symbol = '?'
+  if product.url contains '?'
+    assign param_symbol = '&'
   endif
--%}
+%}
 
-<div class="product-block
-  cc-product-block
-  {% unless product.available %} sold-out{% endunless %}
-  {% if on_sale %} on-sale{% endif %}
-  {% if settings.prod_hover == "second_image" %}hover-image{% endif %}
-  {% if settings.prod_hover == "all_images" and product.images.size > 1 %}all-images{% endif %}
-  {% if product.tags contains 'meta-layout-right' %}layout-right{% endif %}
-  {% if settings.prod_label_layout == 'marquee_on_hover' %} product-block--marquee-on-hover {% endif%}
-  {% if settings.quickbuy_enabled %}product-block--quickbuy{% endif %}
-  {% if mp4_url != blank %}product-block--video{% endif %}
-  {% if product_has_swatches %}product-block--has-swatches{% endif %}
-  {{ product_class }}"
-     data-loop-index="{{ i }}"
-  {% if animate %} data-cc-animate="{{ animation_type }}" data-cc-animate-delay="{{ animate | times: 0.15 }}s" {% endif %}
+<div
+  class="product-block cc-product-block
+    {% unless product.available %} sold-out{% endunless %}
+    {% if on_sale %} on-sale{% endif %}
+    {% if settings.prod_hover == "second_image" %}hover-image{% endif %}
+    {% if settings.prod_hover == "all_images" and product.images.size > 1 %}all-images{% endif %}
+    {% if product.tags contains 'meta-layout-right' %}layout-right{% endif %}
+    {% if settings.prod_label_layout == 'marquee_on_hover' %} product-block--marquee-on-hover {% endif%}
+    {% if settings.quickbuy_enabled %}product-block--quickbuy{% endif %}
+    {% if mp4_url != blank %}product-block--video{% endif %}
+    {% if product_has_swatches %}product-block--has-swatches{% endif %}
+    {{ product_class }}
+  "
+  data-loop-index="{{ i }}"
+  {% if animate %}
+    data-cc-animate="{{ animation_type }}" data-cc-animate-delay="{{ animate | times: 0.15 }}s"
+  {% endif %}
   {% if card_images %}
     data-product-images="{{ card_images }}"
   {% endif %}
 >
-
   <div class="product-block__inner">
     <div class="image {% if settings.prod_hover == "second_image" and product.media.size > 1 %}image--hover-second {% if primary_image.aspect_ratio == secondary_image.aspect_ratio %}image--same-aspect-ratio{% endif %}{% endif %}">
       {% if settings.prod_label_layout contains 'marquee' %}
@@ -108,61 +110,125 @@
         </div>
       {% endif %}
 
-      <a data-cc-animate-click class="image-inner" href="{{ product_url }}" aria-label="{{ product.title | escape }}" tabindex="-1">
-        <div class="image__first">
-          {% if mp4_url != blank %}
-            {% render 'inline-video', video: mp4_url, image: primary_image %}
-          {% else %}
-            {% render 'responsive-image', image: primary_image, min_aspect_ratio: 0.6 %}
-          {% endif %}
+      <a
+        data-cc-animate-click
+        class="image-inner"
+        href="{{ product_url }}"
+        aria-label="{{ product.title | escape }}"
+        tabindex="-1"
+      >
+        <div
+          class="product-images-carousel"
+          data-product-id="{{ product.id }}"
+          data-single-image="{% if image_count <= 1 %}true{% else %}false{% endif %}"
+        >
+          <div class="carousel-container">
+            <div class="carousel-track" data-carousel-track>
+              {%- for media in product.media limit: 5 -%}
+                {%- if media.media_type == 'image' -%}
+                  <div
+                    class="carousel-slide {% if forloop.first %}active{% endif %}"
+                    data-slide-index="{{ forloop.index0 }}"
+                  >
+                    <div class="image__first">
+                      {% if mp4_url != blank and forloop.first %}
+                        {% render 'inline-video', video: mp4_url, image: media.preview_image %}
+                      {% else %}
+                        {% render 'responsive-image', image: media.preview_image, min_aspect_ratio: 0.6 %}
+                      {% endif %}
 
-          {% unless settings.prod_label_layout contains 'marquee' %}
-            {% render 'product-label', product: product, cheapest_variant: cheapest_variant %}
-          {% endunless %}
-        </div>
+                      {% unless settings.prod_label_layout contains 'marquee' %}
+                        {% if forloop.first %}
+                          {% render 'product-label', product: product, cheapest_variant: cheapest_variant %}
+                        {% endif %}
+                      {% endunless %}
+                    </div>
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
 
-        {% if settings.prod_hover == "second_image" and product.media.size > 1 %}
-        <div class="image__second">
-          {% render 'responsive-image', image: secondary_image, aspect_ratio: primary_image.aspect_ratio %}
+            {%- assign image_count = 0 -%}
+            {%- for media in product.media -%}
+              {%- if media.media_type == 'image' -%}
+                {%- assign image_count = image_count | plus: 1 -%}
+              {%- endif -%}
+            {%- endfor -%}
+
+            {% if image_count > 1 %}
+              <button
+                class="carousel-btn carousel-btn--prev"
+                data-carousel-prev
+                aria-label="Previous image"
+                type="button"
+              >
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M7.5 9L4.5 6L7.5 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <button class="carousel-btn carousel-btn--next" data-carousel-next aria-label="Next image" type="button">
+                <svg width="12" height="12" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+              </button>
+            {% endif %}
+          </div>
         </div>
-        {% endif %}
       </a>
+
+      {%- comment -%} Selected Color Name Display {%- endcomment -%}
+      <div class="selected-color-name" data-selected-color-name style="display: none;">
+        <span class="selected-color-label">Color: </span>
+        <span class="selected-color-value"></span>
+      </div>
     </div>
 
     {%- if settings.swatch_enabled and settings.prod_block_swatches and hide_swatches != true -%}
       {%- assign option_limit = 3 -%}
       {%- for product_option in product.options_with_values -%}
         {%- if settings.swatch_option_name == product_option.name -%}
-          <ul class="cc-swatches {% if settings.swatch_use_prod_images == true %}cc-swatches-prod-img cc-swatches-prod-img-{{ settings.swatch_prod_images_shape }}{% endif %}" data-option-name="{{ product_option.name | escape }}">
+          <ul
+            class="cc-swatches {% if settings.swatch_use_prod_images == true %}cc-swatches-prod-img cc-swatches-prod-img-{{ settings.swatch_prod_images_shape }}{% endif %}"
+            data-option-name="{{ product_option.name | escape }}"
+          >
             {%- if product.options.size == 1 -%}
               {%- for variant in product.variants -%}
-                {%- assign variant_image = variant.featured_media.preview_image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                {%- assign variant_image = variant.featured_media.preview_image
+                  | img_url: '1x1'
+                  | replace: '_1x1.', '_{width}x.'
+                -%}
                 {% if forloop.index <= option_limit %}
                   <li>
-                    <a rel="nofollow"
-                       href="{{ product.url }}{{ param_symbol }}variant={{ variant.id }}"
-                       title="{{ variant.title | escape }}"
-                       {% if variant.featured_media.preview_image %}
-                       data-variant-image="{{ variant_image }}"
-                       {% endif %}
-                        class="{% unless variant.available %}unavailable{% endunless %} lazyload"
-                          data-option-item="{{ variant.title | downcase | escape }}"
-                          {% if variant.featured_media %}data-media="{{ variant.featured_media.id }}"{% endif %}
-                    {% if settings.swatch_method == "image" and settings.swatch_use_prod_images == false  %}
-                      data-bgset="{{ variant.title | handle | append: '.png' | file_img_url: '48x48', crop: 'center' }}"
-                    {% elsif settings.swatch_use_prod_images == true %}
-                      data-bgset="{{ variant.featured_media.preview_image | img_url: '72x', crop: 'center' }}"
-                      style="{% if settings.swatch_prod_images_shape == "natural" %}padding-top: {{ 1 | divided_by: variant.featured_media.preview_image.aspect_ratio | times: 100 }}%;{% endif %}"
-                    {% else %}
-                      style="background-color:{{ variant.title | downcase | remove: ' ' | escape }}"
-                    {% endif %}>
+                    <a
+                      rel="nofollow"
+                      href="{{ product.url }}{{ param_symbol }}variant={{ variant.id }}"
+                      title="{{ variant.title | escape }}"
+                      {% if variant.featured_media.preview_image %}
+                        data-variant-image="{{ variant_image }}"
+                      {% endif %}
+                      class="{% unless variant.available %}unavailable{% endunless %} lazyload"
+                      data-option-item="{{ variant.title | downcase | escape }}"
+                      {% if variant.featured_media %}
+                        data-media="{{ variant.featured_media.id }}"
+                      {% endif %}
+                      {% if settings.swatch_method == 'image' and settings.swatch_use_prod_images == false %}
+                        data-bgset="{{ variant.title | handle | append: '.png' | file_img_url: '48x48', crop: 'center' }}"
+                      {% elsif settings.swatch_use_prod_images == true %}
+                        data-bgset="{{ variant.featured_media.preview_image | img_url: '72x', crop: 'center' }}"
+                        style="{% if settings.swatch_prod_images_shape == "natural" %}padding-top: {{ 1 | divided_by: variant.featured_media.preview_image.aspect_ratio | times: 100 }}%;{% endif %}"
+                      {% else %}
+                        style="background-color:{{ variant.title | downcase | remove: ' ' | escape }}"
+                      {% endif %}
+                    >
                       {{ variant.title }}
-                  </a>
+                    </a>
                   </li>
                 {% endif %}
               {%- endfor -%}
               {%- if product.variants.size > option_limit -%}
-                <li class="product-block__more-label"><span>&plus;{{ product.variants.size | minus: option_limit }}</span></li>
+                <li class="product-block__more-label">
+                  <span>&plus;{{ product.variants.size | minus: option_limit }}</span>
+                </li>
               {%- endif -%}
             {%- else -%}
               {%- assign product_option_position_0index = product_option.position | minus: 1 -%}
@@ -186,30 +252,36 @@
                 -%}
                 {% if forloop.index <= option_limit %}
                   <li>
-                    <a rel="nofollow"
-                       href="{{ product.url }}{{ param_symbol }}variant={{ option_value_variant.id }}"
-                       title="{{ product_option_value | escape }}"
-                       class="{% if is_unavailable %} unavailable{% endif %} lazyload"
-                       {% if option_value_variant.featured_media.preview_image %}
+                    <a
+                      rel="nofollow"
+                      href="{{ product.url }}{{ param_symbol }}variant={{ option_value_variant.id }}"
+                      title="{{ product_option_value | escape }}"
+                      class="{% if is_unavailable %} unavailable{% endif %} lazyload"
+                      {% if option_value_variant.featured_media.preview_image %}
                         data-variant-image="{{ variant_image }}"
-                       {% endif %}
-                        data-option-item="{{ product_option_value | downcase | escape }}"
-                        {% if option_value_variant.featured_media %}data-media="{{ option_value_variant.featured_media.id }}"{% endif %}
-                      {% if settings.swatch_method == "image" and settings.swatch_use_prod_images == false  %}
+                      {% endif %}
+                      data-option-item="{{ product_option_value | downcase | escape }}"
+                      {% if option_value_variant.featured_media %}
+                        data-media="{{ option_value_variant.featured_media.id }}"
+                      {% endif %}
+                      {% if settings.swatch_method == 'image' and settings.swatch_use_prod_images == false %}
                         data-bgset="{{ product_option_value | handle | append: '.png' | file_img_url: '48x48', crop: 'center' }}"
                       {% elsif settings.swatch_use_prod_images == true %}
                         data-bgset="{{ option_value_variant.featured_media.preview_image | img_url: '72x', crop: 'center' }}"
                         style="{% if settings.swatch_prod_images_shape == "natural" %}padding-top: {{ 1 | divided_by: option_value_variant.featured_media.preview_image.aspect_ratio | times: 100 }}%;{% endif %}"
                       {% else %}
                         style="background-color:{{ product_option_value | downcase | remove: ' ' | escape }}"
-                      {% endif %}>
-                        {{ product_option_value }}
+                      {% endif %}
+                    >
+                      {{ product_option_value }}
                     </a>
                   </li>
                 {% endif %}
               {%- endfor -%}
               {%- if product_option.values.size > option_limit -%}
-                <li class="product-block__more-label"><span>&plus;{{ product_option.values.size | minus: option_limit }}</span></li>
+                <li class="product-block__more-label">
+                  <span>&plus;{{ product_option.values.size | minus: option_limit }}</span>
+                </li>
               {%- endif -%}
             {%- endif -%}
           </ul>
@@ -225,6 +297,27 @@
       </div>
     {%- endif -%}
 
+    {%- comment -%} Related Product Color Swatches {%- endcomment -%}
+    {%- if enable_related_colors -%}
+      {%- liquid
+        # Use passed settings from collection section or fall back to defaults
+        assign final_swatch_limit = related_products_limit | default: 6
+        assign final_swatch_shape = color_swatch_shape | default: 'square'
+        assign final_swatch_size = swatch_size | default: 'small'
+        assign show_current_product = true
+      -%}
+
+      {%
+        render 'related-product-colors',
+        product: product,
+        block_id: 'product-block-' | append: product.id,
+        swatch_limit: final_swatch_limit,
+        show_product_swatch: show_current_product,
+        swatch_size: final_swatch_size,
+        swatch_shape: final_swatch_shape
+      %}
+    {%- endif -%}
+
     <a data-cc-animate-click href="{{ product_url }}" class="caption upper">
       <span class="title">{{ product.title }}</span>
 
@@ -234,8 +327,10 @@
 
       <div class="price">
         {% if product.price_varies %}{{ 'products.listing.from' | t }}{% endif %}
-        <span class="theme-money">{%- render "price", price: cheapest_variant.price -%}</span>
-        {% if on_sale %}<span class="was-price theme-money">{%- render "price", price: cheapest_variant.compare_at_price -%}</span>{% endif %}
+        <span class="sale-price theme-money">{%- render 'price', price: cheapest_variant.price -%}</span>
+        {% if on_sale -%}
+          <span class="was-price theme-money">{%- render 'price', price: cheapest_variant.compare_at_price -%}</span>
+        {%- endif %}
 
         {% render 'unit-price', variant: cheapest_variant %}
       </div>
@@ -247,7 +342,8 @@
         {%- assign rating_count = product.metafields.reviews.rating_count | plus: 0 -%}
         {% if rating_count != blank and rating_count > 0 %}
           <span class="cc-rating-custom-caption">
-            {{ rating_count }} {{ 'products.product.reviews_link' | t: count: rating_count }}
+            {{ rating_count }}
+            {{ 'products.product.reviews_link' | t: count: rating_count }}
           </span>
         {% endif %}
       </a>

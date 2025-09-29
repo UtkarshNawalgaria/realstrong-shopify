@@ -1,0 +1,619 @@
+{% comment %}
+  Related Product Color Swatches
+
+  Renders color swatches for related products that can change the main product image
+
+  Accepts:
+  - product: {Object} The current product object
+  - swatch_limit: {Number} Maximum number of swatches to show (default: 6)
+  - show_product_swatch: {Boolean} Whether to show current product's color swatch (default: true)
+  - swatch_size: {String} Size of swatches - 'small', 'medium', 'large' (default: 'medium')
+  - block_id: {String} Unique identifier for this product block (required for JS)
+
+  Example usage:
+  {% render 'related-product-colors',
+    product: product,
+    block_id: 'product-' | append: product.id,
+    swatch_limit: 5,
+    swatch_size: 'medium'
+  %}
+{% endcomment %}
+
+{%- liquid
+  # Set default values
+  assign swatch_limit = swatch_limit | default: 6
+  assign show_product_swatch = show_product_swatch | default: true
+  assign swatch_size = swatch_size | default: 'medium'
+
+  # Validate required parameters
+  if product == blank or block_id == blank
+    comment
+      # Cannot render without product and block_id
+    endcomment
+  else
+    # Get related products from metafield
+    assign related_products = product.metafields.custom.related_products.value
+
+    # Get current product's color info
+    assign current_product_color = product.metafields.custom.color.value
+
+    # Initialize arrays for color data
+    assign color_swatches_data = ''
+    assign color_count = 0
+
+    # Process current product first (if enabled and has color)
+    if show_product_swatch and current_product_color != blank
+      assign color_name = current_product_color.name | default: 'Current'
+      assign color_value = current_product_color.value | default: '#000000'
+      assign primary_image = product.featured_media.preview_image
+
+      if primary_image != blank
+        assign image_url = primary_image | image_url: width: 600
+        assign image_alt = primary_image.alt | default: product.title
+
+        # Build images array for current product
+        capture product_images_json
+          echo '['
+          for media in product.media limit: 5
+            if media.media_type == 'image'
+              assign media_url = media.preview_image | image_url: width: 600
+              assign media_alt = media.preview_image.alt | default: product.title
+              if forloop.first == false
+                echo ','
+              endif
+              echo '{'
+              echo '"url": "' | append: media_url | append: '",'
+              echo '"alt": "' | append: media_alt | escape | append: '"'
+              echo '}'
+            endif
+          endfor
+          echo ']'
+        endcapture
+
+        # Build JSON data for current product
+        capture current_swatch_data
+          echo '{'
+          echo '"product_id": ' | append: product.id | append: ','
+          echo '"color_name": "' | append: color_name | escape | append: '",'
+          echo '"color_value": "' | append: color_value | append: '",'
+          echo '"image_url": "' | append: image_url | append: '",'
+          echo '"image_alt": "' | append: image_alt | escape | append: '",'
+          echo '"images": ' | append: product_images_json | append: ','
+          echo '"is_current": true'
+          echo '}'
+        endcapture
+
+        assign color_swatches_data = current_swatch_data
+        assign color_count = color_count | plus: 1
+      endif
+    endif
+
+    # Process related products
+    if related_products != blank and color_count < swatch_limit
+      for related_product in related_products
+        if color_count >= swatch_limit
+          break
+        endif
+
+        # Skip if same as current product
+        if related_product.id == product.id
+          continue
+        endif
+
+        # Get color info for related product
+        assign related_color = related_product.metafields.custom.color.value
+
+        if related_color != blank
+          assign color_name = related_color.name | default: related_product.title
+          assign color_value = related_color.value | default: '#cccccc'
+          assign related_image = related_product.featured_media.preview_image
+
+          if related_image != blank
+            assign image_url = related_image | image_url: width: 600
+            assign image_alt = related_image.alt | default: related_product.title
+
+            # Build images array for related product
+            capture related_images_json
+              echo '['
+              for media in related_product.media limit: 5
+                if media.media_type == 'image'
+                  assign media_url = media.preview_image | image_url: width: 600
+                  assign media_alt = media.preview_image.alt | default: related_product.title
+                  if forloop.first == false
+                    echo ','
+                  endif
+                  echo '{'
+                  echo '"url": "' | append: media_url | append: '",'
+                  echo '"alt": "' | append: media_alt | escape | append: '"'
+                  echo '}'
+                endif
+              endfor
+              echo ']'
+            endcapture
+
+            # Build JSON data for related product
+            capture related_swatch_data
+              echo '{'
+              echo '"product_id": ' | append: related_product.id | append: ','
+              echo '"color_name": "' | append: color_name | escape | append: '",'
+              echo '"color_value": "' | append: color_value | append: '",'
+              echo '"image_url": "' | append: image_url | append: '",'
+              echo '"image_alt": "' | append: image_alt | escape | append: '",'
+              echo '"images": ' | append: related_images_json | append: ','
+              echo '"is_current": false'
+              echo '}'
+            endcapture
+
+            # Add to swatches data
+            if color_swatches_data != blank
+              assign color_swatches_data = color_swatches_data | append: ',' | append: related_swatch_data
+            else
+              assign color_swatches_data = related_swatch_data
+            endif
+
+            assign color_count = color_count | plus: 1
+          endif
+        endif
+      endfor
+    endif
+  endif
+-%}
+
+<style>
+  /* Related Product Color Swatches Styles */
+  .related-product-colors {
+    margin-top: 12px;
+    margin-bottom: 8px;
+    margin-left: 8px;
+  }
+
+  .related-product-colors__swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .related-product-colors__swatch {
+    border: 2px solid transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    background-clip: content-box;
+    flex-shrink: 0;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Swatch sizes - with higher specificity */
+  .related-product-colors .related-product-colors__swatch.related-product-colors__swatch--small {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    min-height: 20px !important;
+  }
+
+  .related-product-colors .related-product-colors__swatch.related-product-colors__swatch--medium {
+    width: 26px !important;
+    height: 26px !important;
+    min-width: 26px !important;
+    min-height: 26px !important;
+  }
+
+  .related-product-colors .related-product-colors__swatch.related-product-colors__swatch--large {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+  }
+
+  /* Swatch shapes */
+  .related-product-colors__swatch--round {
+    border-radius: 50%;
+  }
+
+  .related-product-colors__swatch--square {
+    border-radius: 0;
+  }
+
+  /* Hover and active states */
+  .related-product-colors__swatch:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .related-product-colors__swatch:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.2);
+  }
+
+  .related-product-colors__swatch--current {
+    box-shadow: 0 0 0 1px #333;
+  }
+
+  /* Loading state */
+  .related-product-colors__swatch--loading {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  .related-product-colors__swatch--loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    margin: -5px 0 0 -5px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: swatch-spin 0.8s linear infinite;
+  }
+
+  @keyframes swatch-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 767px) {
+    .related-product-colors {
+      margin-top: 10px;
+      margin-bottom: 6px;
+    }
+
+    .related-product-colors__swatches {
+      gap: 6px;
+    }
+
+    .related-product-colors .related-product-colors__swatch.related-product-colors__swatch--small {
+      width: 18px !important;
+      height: 18px !important;
+      min-width: 18px !important;
+      min-height: 18px !important;
+    }
+
+    .related-product-colors .related-product-colors__swatch.related-product-colors__swatch--medium {
+      width: 24px !important;
+      height: 24px !important;
+      min-width: 24px !important;
+      min-height: 24px !important;
+    }
+
+    .related-product-colors .related-product-colors__swatch.related-product-colors__swatch--large {
+      width: 28px !important;
+      height: 28px !important;
+      min-width: 28px !important;
+      min-height: 28px !important;
+    }
+
+    /* Mobile shape adjustments */
+    .related-product-colors__swatch--square {
+      border-radius: 3px;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .related-product-colors__swatch {
+      border-width: 3px;
+    }
+
+    .related-product-colors__swatch:hover,
+    .related-product-colors__swatch:focus {
+      border-color: #000;
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .related-product-colors__swatch {
+      transition: none;
+    }
+
+    .related-product-colors__swatch:hover {
+      transform: none;
+    }
+
+    .related-product-colors__swatch--loading::after {
+      animation: none;
+    }
+  }
+
+  /* Image transition support */
+  .product-block .responsive-image img {
+    transition: opacity 0.3s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .product-block .responsive-image img {
+      transition: none;
+    }
+  }
+
+  /* Product Images Carousel */
+  .product-images-carousel {
+    position: relative;
+    width: 100%;
+  }
+
+  /* Completely disable all theme hover effects on carousel products */
+  .product-images-carousel,
+  .product-images-carousel .image,
+  .product-images-carousel .image__first,
+  .product-images-carousel .image__second,
+  .product-images-carousel .rimage__image,
+  .product-images-carousel .image-inner,
+  .product-images-carousel .responsive-image img {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  /* Override all theme hover image effects */
+  .product-block:hover .product-images-carousel .image__first,
+  .product-block.hover-image:hover .product-images-carousel .image__first,
+  .product-block:hover.hover-image .product-images-carousel .image--hover-second .image__first,
+  .collection-block:hover.hover-image .product-images-carousel .image--hover-second .image__first {
+    transform: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+  }
+
+  .product-block:hover .product-images-carousel .image__second,
+  .product-block.hover-image:hover .product-images-carousel .image__second,
+  .product-block:hover.hover-image .product-images-carousel .image--hover-second .image__second,
+  .collection-block:hover.hover-image .product-images-carousel .image--hover-second .image__second {
+    opacity: 0 !important;
+    transform: none !important;
+    transition: none !important;
+    display: none !important;
+  }
+
+  /* Lock carousel images in place */
+  .product-images-carousel .image__first .rimage__image,
+  .product-images-carousel:hover .image__first .rimage__image,
+  .product-images-carousel .image__first:hover .rimage__image {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  /* Hide secondary images completely in carousel mode */
+  .product-images-carousel .image__second {
+    display: none !important;
+  }
+
+  /* Disable any automatic slideshow or hover cycling */
+  .product-images-carousel .carousel-slide {
+    pointer-events: none;
+  }
+
+  .product-images-carousel .carousel-btn,
+  .product-images-carousel .carousel-dot {
+    pointer-events: auto;
+  }
+
+  /* Override any theme hover effects */
+  .product-images-carousel:hover .carousel-slide:not(.active) {
+    opacity: 0 !important;
+  }
+
+  .product-images-carousel .carousel-slide.active {
+    opacity: 1 !important;
+  }
+
+  /* Hide navigation for single images */
+  .product-images-carousel[data-single-image='true'] .carousel-btn,
+  .product-images-carousel[data-single-image='true'] .carousel-dots {
+    display: none !important;
+  }
+
+  .carousel-container {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 0;
+    padding-bottom: 120%; /* Slightly taller than square for product images */
+  }
+
+  .carousel-track {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .carousel-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .carousel-slide.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .carousel-btn {
+    position: absolute;
+    top: 90%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    transition: all 0.2s ease;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .carousel-btn:hover {
+    background: rgba(0, 0, 0, 1) !important;
+  }
+
+  .carousel-track:hover + .carousel-btn {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .carousel-btn--prev {
+    left: 8px;
+  }
+
+  .carousel-btn--next {
+    right: 8px;
+  }
+
+  .carousel-btn svg {
+    color: #333;
+    stroke: #333;
+    stroke-width: 1.5;
+    fill: none;
+  }
+
+  /* Selected Color Name */
+  .selected-color-name {
+    margin-top: 8px;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .selected-color-label {
+    font-weight: 600;
+    color: #666;
+  }
+
+  .selected-color-value {
+    color: #333;
+  }
+
+  @media (max-width: 767px) {
+    .carousel-btn {
+      width: 28px;
+      height: 28px;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .product-images-carousel:hover .carousel-btn {
+      opacity: 0.9;
+      visibility: visible;
+    }
+
+    .carousel-btn--prev {
+      left: 4px;
+    }
+
+    .carousel-btn--next {
+      right: 4px;
+    }
+
+    .carousel-dots {
+      bottom: 4px;
+      opacity: 0.9;
+      padding: 3px 6px;
+    }
+
+    .carousel-dot {
+      width: 8px;
+      height: 8px;
+    }
+
+    .selected-color-name {
+      font-size: 11px;
+      margin-top: 6px;
+      padding: 3px 6px;
+    }
+
+    /* Touch-friendly navigation */
+    .product-images-carousel {
+      touch-action: pan-y;
+    }
+
+    .carousel-btn {
+      touch-action: manipulation;
+    }
+  }
+</style>
+
+{%- comment -%} Only render if we have color data {%- endcomment -%}
+{%- if color_count > 0 -%}
+  <div
+    class="related-product-colors"
+    data-block-id="{{ block_id }}"
+    data-swatch-size="{{ swatch_size }}"
+    data-color-swatches="[{{ color_swatches_data }}]"
+    data-target-image-selector=".product-images-carousel"
+    role="group"
+    aria-label="Related product color variations"
+  >
+    <div class="related-product-colors__swatches" role="radiogroup" aria-label="Color options">
+      {%- if color_swatches_data != blank -%}
+        {%- assign swatches_array = color_swatches_data | split: '},' -%}
+        {%- for swatch_data in swatches_array -%}
+          {%- if swatch_data contains '"color_value"' -%}
+            {%- assign swatch_parts = swatch_data | split: '"color_value": "' -%}
+            {%- if swatch_parts[1] -%}
+              {%- assign color_and_rest = swatch_parts[1] | split: '"' -%}
+              {%- assign swatch_color = color_and_rest[0] -%}
+
+              {%- assign name_parts = swatch_data | split: '"color_name": "' -%}
+              {%- if name_parts[1] -%}
+                {%- assign name_and_rest = name_parts[1] | split: '"' -%}
+                {%- assign swatch_name = name_and_rest[0] -%}
+              {%- endif -%}
+
+              {%- assign current_parts = swatch_data | split: '"is_current": ' -%}
+              {%- assign is_current = false -%}
+              {%- if current_parts[1] -%}
+                {%- assign current_value = current_parts[1] | split: ',' | first | split: '}' | first | strip -%}
+                {%- if current_value == 'true' -%}
+                  {%- assign is_current = true -%}
+                {%- endif -%}
+              {%- endif -%}
+
+              <button
+                type="button"
+                class="related-product-colors__swatch related-product-colors__swatch--{{ swatch_size }} related-product-colors__swatch--{{ swatch_shape | default: 'round' }} {% if is_current %}related-product-colors__swatch--current{% endif %}"
+                data-swatch-index="{{ forloop.index0 }}"
+                data-color="{{ swatch_color }}"
+                style="background: {{ swatch_color }};"
+                title="{{ swatch_name | escape }}"
+                aria-label="Switch to {{ swatch_name | escape }} color variant"
+                aria-pressed="{% if is_current %}true{% else %}false{% endif %}"
+                role="radio"
+                aria-checked="{% if is_current %}true{% else %}false{% endif %}"
+                tabindex="{% if is_current %}0{% else %}-1{% endif %}"
+              >
+                <span class="visually-hidden">
+                  {{- swatch_name | escape -}}
+                  {%- if is_current %} (currently selected){% endif -%}
+                </span>
+              </button>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}

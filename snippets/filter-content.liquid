@@ -1,0 +1,217 @@
+{% comment %}
+  Render filter form content (filters and sorting)
+
+  Accepts:
+  - results: {Object} Collection or Search object
+  - section: {Object} The section object with settings
+  - current_sort_by: {String} The value of the current sort
+  - form_hidden_fields: {String} Hidden form fields HTML
+  - translation_sort_title: {String} Sort section title translation
+  - show_filters: {Boolean} Whether filters should be shown
+{% endcomment %}
+
+{%- for filter in results.filters -%}
+  {%- liquid
+    if settings.swatch_enabled and settings.swatch_option_name == filter.label and filter.type == 'list'
+      assign filter_group_is_swatch = true
+    elsif filter.presentation == 'swatch'
+      assign filter_group_is_swatch = true
+    else
+      assign filter_group_is_swatch = false
+    endif
+
+    if section.settings.collapse_filters_method == 'all'
+      assign filter_is_open = false
+    elsif section.settings.collapse_filters_method == 'none'
+      assign filter_is_open = true
+    elsif section.settings.collapse_filters_method contains 'over-'
+      assign limit = section.settings.collapse_filters_method | split: '-' | last | plus: 0
+      if filter.values.size > limit
+        assign filter_is_open = false
+      else
+        assign filter_is_open = true
+      endif
+    endif
+
+    assign filter_title = filter.label | escape
+    assign num_available_options = 0
+  -%}
+
+  {%- capture filter_content -%}
+    {%- case filter.type -%}
+      {%- when "boolean" or "list" -%}
+        {%- if filter_group_is_swatch -%}
+          {%- if filter.presentation == 'swatch' -%}
+            <style>
+              {%- comment -%} Native swatches {%- endcomment -%}
+              {%- for value in filter.values -%}
+                {%- if value.swatch and value.swatch.image -%}
+                  .cc-swatches [data-tag="{{ value.label | handle }}"][data-swatch-native] .cc-checkbox .swatch-sample {
+                    background-image: url({{ value.swatch.image | image_url: width: 40, height: 40, crop: 'center' }});
+                  }
+                  {%- continue -%}
+                {%- elsif value.swatch and value.swatch.color -%}
+                  .cc-swatches [data-tag="{{ value.label | handle }}"][data-swatch-native] .cc-checkbox .swatch-sample {
+                    background-color: rgb({{ value.swatch.color.rgb }});
+                  }
+                  {%- continue -%}
+                {%- endif -%}
+                {%- liquid
+                  if value.display.type != 'colors'
+                    continue
+                  endif
+                  assign size_limit = value.display.value.size | at_most: 4
+                -%}
+                {%- case size_limit -%}
+                  {%- when 1 -%}
+                    .cc-swatches [data-tag="{{ value.label | handle }}"][data-swatch-native] .cc-checkbox .swatch-sample {
+                      background-color: {{ value.display.value }};
+                    }
+                  {%- when 2 -%}
+                    .cc-swatches [data-tag="{{ value.label | handle }}"][data-swatch-native] .cc-checkbox .swatch-sample {
+                      background-image: linear-gradient(to right, {{ value.display.value[0] }}, {{ value.display.value[0] }} 50%, {{ value.display.value[1] }} 50%, {{ value.display.value[1] }});
+                    }
+                  {%- when 3 -%}
+                    .cc-swatches [data-tag="{{ value.label | handle }}"][data-swatch-native] .cc-checkbox .swatch-sample {
+                      background-image: linear-gradient(to right, {{ value.display.value[0] }}, {{ value.display.value[0] }} 33.3%, {{ value.display.value[1] }} 33.3%, {{ value.display.value[1] }} 66.6%, {{ value.display.value[2] }} 66.6%, {{ value.display.value[2] }});
+                    }
+                  {%- when 4 -%}
+                    .cc-swatches [data-tag="{{ value.label | handle }}"][data-swatch-native] .cc-checkbox .swatch-sample {
+                      background-image: conic-gradient({{ value.display.value[0] }} 0deg 90deg, {{ value.display.value[1] }} 90deg 180deg, {{ value.display.value[2] }} 180deg 270deg, {{ value.display.value[3] }} 270deg 360deg);
+                    }
+                {%- endcase -%}
+                {%- if size_limit > 1 -%}
+                  .cc-swatches [data-tag="{{ value.label | handle }}"][data-swatch-native] .cc-checkbox .swatch-sample {
+                    transform: rotateZ(45deg);
+                  }
+                {%- endif -%}
+              {%- endfor -%}
+            </style>
+          {%- endif -%}
+          <ul class="cc-swatches">
+            {%- for value in filter.values -%}
+              {%- if value.count > 0 or section.settings.show_filter_deadends %}
+                {%- assign num_available_options = num_available_options | plus: 1 -%}
+                <li data-tag="{{ value.label | handle }}"{% if filter.presentation == 'swatch' %} data-swatch-native{% endif %}>
+                  <label class="cc-checkbox{% if value.active %} active{% endif %}{% if value.count == 0 and value.active == false %} disabled{% endif %}"
+                         title="{{ value.label | escape }}">
+                    <input class="cc-checkbox__input"
+                           id="Filter-{{ value.param_name }}-{{ value.value | handle }}"
+                           type="checkbox"
+                           name="{{ value.param_name }}"
+                           value="{{ value.value | escape }}"
+                           {% if value.active %}checked{% endif %}
+                      {% if value.count == 0 and value.active == false %}disabled{% endif %}>
+                    {%- if filter.presentation == 'swatch' -%}
+                      <span class="swatch-sample">
+                        {%- if value.display.type == 'image' -%}
+                          <img
+                            class="swatch-sample__img"
+                            src="{{ value.display.value | image_url: width: 64, height: 64, crop: 'center' }}"
+                            width="64"
+                            height="64"
+                            alt="{{ value.display.value.alt | escape }}"
+                            loading="lazy"
+                            fetchpriority="low"
+                            role="presentation">
+                        {%- endif -%}
+                      </span>
+                    {%- endif -%}
+                  </label>
+                  {% if settings.swatch_method == "image" %}
+                    {% style %}
+                      .cc-swatches [data-tag="{{ value.label | handle }}"]:not([data-swatch-native]) .cc-checkbox::before {
+                      background-image: url({{ value.label | handle | append: '.png' | file_img_url: '48x48', crop: 'center' }});
+                      }
+                    {% endstyle %}
+                  {% endif %}
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        {%- else -%}
+          {%- for value in filter.values -%}
+            {%- if value.count > 0 or section.settings.show_filter_deadends %}
+              {%- assign num_available_options = num_available_options | plus: 1 -%}
+              <label class="cc-checkbox">
+                <input class="cc-checkbox__input"
+                       id="Filter-{{ value.param_name }}-{{ value.value | handle }}"
+                       type="checkbox"
+                       name="{{ value.param_name }}"
+                       value="{{ value.value | escape }}"
+                       {% if value.active %}checked{% endif %}
+                  {% if value.count == 0 and value.active == false %}disabled{% endif %}>
+
+                <span class="cc-checkbox__label">{{ value.label | escape }}</span>
+
+                {% if section.settings.show_filter_counts %}
+                  <span class="cc-checkbox__count">{{ value.count }}</span>
+                {% endif %}
+              </label>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+
+      {%- when "price_range" -%}
+        {%- assign num_available_options = 1 -%}
+        {% render 'price-range', filter: filter %}
+
+    {%- endcase -%}
+  {%- endcapture -%}
+
+  {%- if num_available_options > 0 or section.settings.show_filter_deadends -%}
+    {%- render 'accordion',
+      first_item_open: filter_is_open,
+      item1_title: filter_title,
+      item1_content: filter_content
+    -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- if section.settings.enable_sorting -%}
+  {%- liquid
+    assign filter_title = translation_sort_title
+
+    if section.settings.collapse_sort_by == true
+      assign filter_is_open = false
+    else
+      assign filter_is_open = true
+    endif
+  -%}
+
+  {%- capture filter_content -%}
+    <ul class="cc-product-filter__sort-by">
+      {%- for option in results.sort_options -%}
+        {%- if option.value == "manual" and section.settings.show_featured_in_sort -%}
+          <label class="cc-checkbox sort-{{ option.name | handle }}">
+            <input class="cc-checkbox__input"
+                   type="radio"
+                   name="sort_by"
+                   value="{{ option.value | escape }}"
+                   {% if option.value == current_sort_by %}checked{% endif %}
+            >
+            <span class="cc-checkbox__label">{{ option.name | escape }}</span>
+          </label>
+        {%- elsif option.value != "manual" -%}
+          <label class="cc-checkbox sort-{{ option.name | handle }}">
+            <input class="cc-checkbox__input"
+                   type="radio"
+                   name="sort_by"
+                   value="{{ option.value | escape }}"
+                   {% if option.value == current_sort_by %}checked{% endif %}
+            >
+            <span class="cc-checkbox__label">{{ option.name | escape }}</span>
+          </label>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  {%- endcapture -%}
+
+  {%- render 'accordion', first_item_open: filter_is_open, item1_title: filter_title, item1_content: filter_content -%}
+{% endif %}
+
+{{ form_hidden_fields }}
+
+<noscript>
+  <button type="submit" class="btn">{{ translation_submit_button }}</button>
+</noscript>
