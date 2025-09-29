@@ -38,19 +38,20 @@
 {% endstyle %}
 
 <div class="product-area
-      {% if product.media.size == 1 %}product-area--loner{% endif %}
-      {% if section.settings.full_width == false or is_featured_product %} product-area--restrict-width{% endif %}
-      {% if section.settings.media_style == 'one-column' %}product-area--one-col {% if section.settings.full_width %}header-overlap-section{% endif %} {% endif %}
-      {% if section.settings.media_style == 'two-column' %}product-area--two-col {% endif %}
-      {% if section.settings.media_style == 'collage' %}product-area--collage{% endif %}
-      {% if section.settings.media_style == 'carousel' or is_featured_product %}product-area--carousel {% if section.settings.full_width %}header-overlap-section{% endif %}{% endif %}"
-     data-section-type="product-template"
-     data-components="tabs,accordion,sticky-scroll-direction"
-     data-is-featured-product="{{ is_featured_product }}"
-     data-ajax-add-to-cart="{% if settings.cart_type == "go_to_cart" %}false{% else %}true{% endif %}"
-     data-is-preorder="{{ is_preorder_product }}"
-     data-product-id="{{ product.id }}"
-     data-enable-history-state="true">
+  {% if product.media.size == 1 %}product-area--loner{% endif %}
+  {% if section.settings.full_width == false or is_featured_product %} product-area--restrict-width{% endif %}
+  {% if section.settings.media_style == 'one-column' %}product-area--one-col {% if section.settings.full_width %}header-overlap-section{% endif %} {% endif %}
+  {% if section.settings.media_style == 'two-column' %}product-area--two-col {% endif %}
+  {% if section.settings.media_style == 'collage' %}product-area--collage{% endif %}
+  {% if section.settings.media_style == 'carousel' or is_featured_product %}product-area--carousel {% if section.settings.full_width %}header-overlap-section{% endif %}{% endif %}"
+  data-section-type="product-template"
+  data-components="tabs,accordion,sticky-scroll-direction"
+  data-is-featured-product="{{ is_featured_product }}"
+  data-ajax-add-to-cart="{% if settings.cart_type == "go_to_cart" %}false{% else %}true{% endif %}"
+  data-is-preorder="{{ is_preorder_product }}"
+  data-product-id="{{ product.id }}"
+  data-enable-history-state="true"
+>
   {% style %}
     {% for media in product.media %}
       @media(max-width:767px){
@@ -67,6 +68,7 @@
     </div>
   {% endif %}
 
+  {% comment %} Product Images {% endcomment %}
   <div class="product-area__media {% if media_columns_to_show != 1 %}multi-column{% endif %}"
        data-cc-animate data-cc-animate-duration="1s">
 
@@ -103,28 +105,28 @@
     {%- endif -%}
 
     <div class="theme-gallery product-slider
-        {% if is_featured_product %}featured-product__gallery{% endif %}
-        {% if product.media.size == 1 %}theme-gallery--loner{% endif %}
-        {% if section.settings.enable_zoom %}theme-gallery--zoom-enabled cursor-{{ section.settings.zoom_cursor }}{% endif %}
-        {% if section.settings.show_thumbnails and product.media.size > 1 and section.settings.media_style == "one-column" %}theme-gallery--thumbs-enabled{% endif %}"
-         data-product-id="{{ product.id }}"
-         data-column-count="{{ media_columns_to_show }}"
-         data-media-count="{{ product.media.size }}"
-         data-media-crop="{{ section.settings.media_crop }}"
-         data-layout="{%- if is_featured_product -%}carousel{%- else -%}{{ section.settings.media_style }}{%- endif -%}"
-         data-scroll-to-variant-media="{{ section.settings.scroll_to_variant_media }}"
-         data-variant-image-grouping="{{ section.settings.variant_media_grouping }}"
-         data-variant-image-grouping-option={{ section.settings.variant_media_grouping_option | escape | downcase | default: "color,colour,couleur,farbe" | json }}
-         data-underline-selected-media="{{ section.settings.highlight_selected_media }}"
+      {% if is_featured_product %}featured-product__gallery{% endif %}
+      {% if product.media.size == 1 %}theme-gallery--loner{% endif %}
+      {% if section.settings.enable_zoom %}theme-gallery--zoom-enabled cursor-{{ section.settings.zoom_cursor }}{% endif %}
+      {% if section.settings.show_thumbnails and product.media.size > 1 and section.settings.media_style == "one-column" %}theme-gallery--thumbs-enabled{% endif %}"
+      data-product-id="{{ product.id }}"
+      data-column-count="{{ media_columns_to_show }}"
+      data-media-count="{{ product.media.size }}"
+      data-media-crop="{{ section.settings.media_crop }}"
+      data-layout="{%- if is_featured_product -%}carousel{%- else -%}{{ section.settings.media_style }}{%- endif -%}"
+      data-scroll-to-variant-media="{{ section.settings.scroll_to_variant_media }}"
+      data-variant-image-grouping="{{ section.settings.variant_media_grouping }}"
+      data-variant-image-grouping-option={{ section.settings.variant_media_grouping_option | escape | downcase | default: "color,colour,couleur,farbe" | json }}
+      data-underline-selected-media="{{ section.settings.highlight_selected_media }}"
     >
       <div class="theme-viewport swiper-container" data-swiper-nav-style="{{ section.settings.slide_nav_style }}">
         <div class="theme-images swiper-wrapper">
           {% if product != blank %}
             {% for media in product.media %}
               <div class="theme-img theme-img-{{ forloop.index }} swiper-slide {% if featured_media == media %}current-img{% endif %}"
-                      {% if media.media_type == "image" %}
-                        data-full-size="{{ media.preview_image | img_url: 'master' }}"
-                      {% endif %}
+                {% if media.media_type == "image" %}
+                  data-full-size="{{ media.preview_image | img_url: 'master' }}"
+                {% endif %}
               >
                 {%- if media_columns_to_show != 1 -%}
                   {% render 'media', media: media, animation_type: 'cc-fade-in', prevent_lazyload: forloop.first %}
@@ -174,6 +176,7 @@
     </div>
   </div>
 
+  {% comment %} Product Details {% endcomment %}
   <div class="product-area__details product-detail">
     <div class="product-area__details__inner {% if section.settings.sticky_behaviour == "none" %}product-area__details__inner--not-sticky{% elsif section.settings.sticky_behaviour == "bottom" %}cc-sticky-scroll-direction{% endif %}"
       {% if section.settings.sticky_behaviour == "bottom" %}style="top: var(--nav-height)" data-cc-sticky-scroll-top{% endif %}>
@@ -183,9 +186,9 @@
           {% if product != blank %}
             {% capture product_form_class %}product-purchase-form feedback-{{ settings.cart_type }}{% endcapture %}
             {%- if product.featured_image == blank -%}
-              {%- assign image_thumb = product.media[0].preview_image.src | img_url: '300x300' %}
+              {%- assign image_thumb = product.media[0].preview_image.src | image_url: width: 300, height: 300 %}
             {%- else -%}
-              {% assign image_thumb = product.featured_image.src | img_url: '300x300' %}
+              {% assign image_thumb = product.featured_image.src | image_url: width: 300, height: 300 %}
             {%- endif -%}
 
             {%- if settings.swatch_enabled and settings.swatch_method == "image" and settings.swatch_use_prod_images == false -%}
@@ -427,9 +430,10 @@
 
                 {%- when 'variant_picker' -%}
                   <div class="product-detail__form__options product-detail__gap-lg
-                          product-detail__form__options--{{ block.settings.variant_style }}
-                          {% if product.variants.size == 1 %}product-detail__form__options--no-options{% endif %}"
-                      data-show-realtime-availability="{{ block.settings.show_realtime_availability }}" {{ block.shopify_attributes }}>
+                    product-detail__form__options--{{ block.settings.variant_style }}
+                    {% if product.variants.size == 1 %}product-detail__form__options--no-options{% endif %}"
+                    data-show-realtime-availability="{{ block.settings.show_realtime_availability }}" {{ block.shopify_attributes }}
+                  >
 
                     {% if product.variants.size > 1 %}
                       {% if has_buy_buttons == false %}
@@ -579,11 +583,12 @@
                     <select name="id" class="original-selector" aria-label="{{ 'products.product.selector_label' | t | escape }}">
                       {% for variant in product.variants %}
                         <option value="{{ variant.id }}"
-                                {% if variant == current_variant %} selected="selected"{% endif %}
-                                {% if variant.inventory_management != blank %}
-                                  data-inventory="{{ variant.inventory_quantity }}"
-                                {% endif %}
-                                data-stock="{% if variant.inventory_management != blank and variant.inventory_quantity <= 0 %}out{% endif %}">{{ variant.title | escape }}</option>
+                          {% if variant == current_variant %} selected="selected"{% endif %}
+                          {% if variant.inventory_management != blank %}
+                            data-inventory="{{ variant.inventory_quantity }}"
+                          {% endif %}
+                          data-stock="{% if variant.inventory_management != blank and variant.inventory_quantity <= 0 %}out{% endif %}"
+                        >{{ variant.title | escape }}</option>
                       {% endfor %}
                     </select>
 
@@ -607,8 +612,8 @@
 
                     <div class="product-detail__form__action product-detail__gap-lg
                       {% if block.settings.show_quantity_selector %}product-detail__form__options--with-quantity{% endif %}
-                      {% if enable_dynamic_payment_button %}with-payment-button{% endif %}">
-
+                      {% if enable_dynamic_payment_button %}with-payment-button{% endif %}"
+                    >
                       {% if block.settings.show_quantity_selector %}
                         <div class="quantity-wrapper border-radius-{{ settings.buttons_shape }}">
                           <a href="#" data-quantity="down">&minus;</a>
@@ -619,7 +624,7 @@
                         <input type="hidden" name="quantity" value="1" />
                       {% endif %}
 
-                      <button class="button {% if enable_dynamic_payment_button %}alt{% endif %}" type="submit" name="add">
+                      <button class="button{% if enable_dynamic_payment_button %} alt{% endif %}" type="submit" name="add">
                         {%- if is_preorder_product -%}
                           {{ 'products.product.preorder' | t }}
                         {%- else -%}
@@ -1008,7 +1013,34 @@
 
                 {%- when 'divider' -%}
                   <hr class="divider__line-{{ block.settings.show_line }} divider__gap-above-{{ block.settings.spacing_above }}  divider__gap-below-{{ block.settings.spacing_below }}" {{ block.shopify_attributes }}/>
-
+                {% when 'related_products' %}
+                  {% liquid
+                    assign related_products = product.metafields['shopify--discovery--product_recommendation'].related_products.value
+                    assign related_products_count = related_products | reverse | reverse | size
+                  %}
+                  {% if related_products_count > 0 %}
+                    <div class="product-detail__form__related_products">
+                      <label class="label" style="font-weight: 600; font-size: 16px; text-transform: none;">Color: {{ product.metafields.custom.color.value.name }}</label>
+                      <div class="related-products-container" data-type="{{ block.settings.type }}">
+                        {% for related_product in related_products %}
+                          <a href="{{ related_product.url }}">
+                            <div
+                              class="related-products__item{% if related_product.id == product.id %} current{% endif %}"
+                              style="background-color: {{ related_product.metafields.custom.color.value.value }}"
+                              data-type="{{ block.settings.type }}"
+                            >
+                              {% if block.settings.type == 'image' %}
+                                {{ related_product.featured_media.preview_image |
+                                  image_url: width: 60 |
+                                  image_tag
+                                }}
+                              {% endif %}
+                            </div>
+                          </a>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  {% endif %}
               {%- endcase -%}
             {%- endfor -%}
 
@@ -1627,143 +1659,143 @@
             "label": "Icon",
             "default": "none",
             "options": [
-  {
-    "value": "none",
-    "label": "None"
-  },
-  {
-    "value": "award",
-    "label": "Award"
-  },
-  {
-    "value": "box",
-    "label": "Box"
-  },
-  {
-    "value": "briefcase",
-    "label": "Briefcase"
-  },
-  {
-    "value": "calendar",
-    "label": "Calendar"
-  },
-  {
-    "value": "chat_bubble",
-    "label": "Chat bubble"
-  },
-  {
-    "value": "check_mark",
-    "label": "Check mark"
-  },
-  {
-    "value": "clock",
-    "label": "Clock"
-  },
-  {
-    "value": "credit_card",
-    "label": "Credit card"
-  },
-  {
-    "value": "dollar_sign",
-    "label": "Dollar sign"
-  },
-  {
-    "value": "dryer",
-    "label": "Dryer"
-  },
-  {
-    "value": "eye",
-    "label": "Eye"
-  },
-  {
-    "value": "feather",
-    "label": "Feather"
-  },
-  {
-    "value": "gift",
-    "label": "Gift"
-  },
-  {
-    "value": "heart",
-    "label": "Heart"
-  },
-  {
-    "value": "iron",
-    "label": "Iron"
-  },
-  {
-    "value": "leaf",
-    "label": "Leaf"
-  },
-  {
-    "value": "leather",
-    "label": "Leather"
-  },
-  {
-    "value": "lock",
-    "label": "Lock"
-  },
-  {
-    "value": "map_pin",
-    "label": "Map pin"
-  },
-  {
-    "value": "pants",
-    "label": "Pants"
-  },
-  {
-    "value": "percent",
-    "label": "Percent"
-  },
-  {
-    "value": "plane",
-    "label": "Plane"
-  },
-  {
-    "value": "price_tag",
-    "label": "Price tag"
-  },
-  {
-    "value": "question_mark",
-    "label": "Question mark"
-  },
-  {
-    "value": "return",
-    "label": "Return"
-  },
-  {
-    "value": "ruler",
-    "label": "Ruler"
-  },
-  {
-    "value": "scissors",
-    "label": "Scissors"
-  },
-  {
-    "value": "shirt",
-    "label": "Shirt"
-  },
-  {
-    "value": "shoe",
-    "label": "Shoe"
-  },
-  {
-    "value": "silhouette",
-    "label": "Silhouette"
-  },
-  {
-    "value": "star",
-    "label": "Star"
-  },
-  {
-    "value": "truck",
-    "label": "Truck"
-  },
-  {
-    "value": "washing",
-    "label": "Washing"
-  }
-]
+              {
+                "value": "none",
+                "label": "None"
+              },
+              {
+                "value": "award",
+                "label": "Award"
+              },
+              {
+                "value": "box",
+                "label": "Box"
+              },
+              {
+                "value": "briefcase",
+                "label": "Briefcase"
+              },
+              {
+                "value": "calendar",
+                "label": "Calendar"
+              },
+              {
+                "value": "chat_bubble",
+                "label": "Chat bubble"
+              },
+              {
+                "value": "check_mark",
+                "label": "Check mark"
+              },
+              {
+                "value": "clock",
+                "label": "Clock"
+              },
+              {
+                "value": "credit_card",
+                "label": "Credit card"
+              },
+              {
+                "value": "dollar_sign",
+                "label": "Dollar sign"
+              },
+              {
+                "value": "dryer",
+                "label": "Dryer"
+              },
+              {
+                "value": "eye",
+                "label": "Eye"
+              },
+              {
+                "value": "feather",
+                "label": "Feather"
+              },
+              {
+                "value": "gift",
+                "label": "Gift"
+              },
+              {
+                "value": "heart",
+                "label": "Heart"
+              },
+              {
+                "value": "iron",
+                "label": "Iron"
+              },
+              {
+                "value": "leaf",
+                "label": "Leaf"
+              },
+              {
+                "value": "leather",
+                "label": "Leather"
+              },
+              {
+                "value": "lock",
+                "label": "Lock"
+              },
+              {
+                "value": "map_pin",
+                "label": "Map pin"
+              },
+              {
+                "value": "pants",
+                "label": "Pants"
+              },
+              {
+                "value": "percent",
+                "label": "Percent"
+              },
+              {
+                "value": "plane",
+                "label": "Plane"
+              },
+              {
+                "value": "price_tag",
+                "label": "Price tag"
+              },
+              {
+                "value": "question_mark",
+                "label": "Question mark"
+              },
+              {
+                "value": "return",
+                "label": "Return"
+              },
+              {
+                "value": "ruler",
+                "label": "Ruler"
+              },
+              {
+                "value": "scissors",
+                "label": "Scissors"
+              },
+              {
+                "value": "shirt",
+                "label": "Shirt"
+              },
+              {
+                "value": "shoe",
+                "label": "Shoe"
+              },
+              {
+                "value": "silhouette",
+                "label": "Silhouette"
+              },
+              {
+                "value": "star",
+                "label": "Star"
+              },
+              {
+                "value": "truck",
+                "label": "Truck"
+              },
+              {
+                "value": "washing",
+                "label": "Washing"
+              }
+            ]
           },
           {
             "type": "text",
@@ -1804,143 +1836,143 @@
             "label": "Icon",
             "default": "none",
             "options": [
-  {
-    "value": "none",
-    "label": "None"
-  },
-  {
-    "value": "award",
-    "label": "Award"
-  },
-  {
-    "value": "box",
-    "label": "Box"
-  },
-  {
-    "value": "briefcase",
-    "label": "Briefcase"
-  },
-  {
-    "value": "calendar",
-    "label": "Calendar"
-  },
-  {
-    "value": "chat_bubble",
-    "label": "Chat bubble"
-  },
-  {
-    "value": "check_mark",
-    "label": "Check mark"
-  },
-  {
-    "value": "clock",
-    "label": "Clock"
-  },
-  {
-    "value": "credit_card",
-    "label": "Credit card"
-  },
-  {
-    "value": "dollar_sign",
-    "label": "Dollar sign"
-  },
-  {
-    "value": "dryer",
-    "label": "Dryer"
-  },
-  {
-    "value": "eye",
-    "label": "Eye"
-  },
-  {
-    "value": "feather",
-    "label": "Feather"
-  },
-  {
-    "value": "gift",
-    "label": "Gift"
-  },
-  {
-    "value": "heart",
-    "label": "Heart"
-  },
-  {
-    "value": "iron",
-    "label": "Iron"
-  },
-  {
-    "value": "leaf",
-    "label": "Leaf"
-  },
-  {
-    "value": "leather",
-    "label": "Leather"
-  },
-  {
-    "value": "lock",
-    "label": "Lock"
-  },
-  {
-    "value": "map_pin",
-    "label": "Map pin"
-  },
-  {
-    "value": "pants",
-    "label": "Pants"
-  },
-  {
-    "value": "percent",
-    "label": "Percent"
-  },
-  {
-    "value": "plane",
-    "label": "Plane"
-  },
-  {
-    "value": "price_tag",
-    "label": "Price tag"
-  },
-  {
-    "value": "question_mark",
-    "label": "Question mark"
-  },
-  {
-    "value": "return",
-    "label": "Return"
-  },
-  {
-    "value": "ruler",
-    "label": "Ruler"
-  },
-  {
-    "value": "scissors",
-    "label": "Scissors"
-  },
-  {
-    "value": "shirt",
-    "label": "Shirt"
-  },
-  {
-    "value": "shoe",
-    "label": "Shoe"
-  },
-  {
-    "value": "silhouette",
-    "label": "Silhouette"
-  },
-  {
-    "value": "star",
-    "label": "Star"
-  },
-  {
-    "value": "truck",
-    "label": "Truck"
-  },
-  {
-    "value": "washing",
-    "label": "Washing"
-  }
-]
+              {
+                "value": "none",
+                "label": "None"
+              },
+              {
+                "value": "award",
+                "label": "Award"
+              },
+              {
+                "value": "box",
+                "label": "Box"
+              },
+              {
+                "value": "briefcase",
+                "label": "Briefcase"
+              },
+              {
+                "value": "calendar",
+                "label": "Calendar"
+              },
+              {
+                "value": "chat_bubble",
+                "label": "Chat bubble"
+              },
+              {
+                "value": "check_mark",
+                "label": "Check mark"
+              },
+              {
+                "value": "clock",
+                "label": "Clock"
+              },
+              {
+                "value": "credit_card",
+                "label": "Credit card"
+              },
+              {
+                "value": "dollar_sign",
+                "label": "Dollar sign"
+              },
+              {
+                "value": "dryer",
+                "label": "Dryer"
+              },
+              {
+                "value": "eye",
+                "label": "Eye"
+              },
+              {
+                "value": "feather",
+                "label": "Feather"
+              },
+              {
+                "value": "gift",
+                "label": "Gift"
+              },
+              {
+                "value": "heart",
+                "label": "Heart"
+              },
+              {
+                "value": "iron",
+                "label": "Iron"
+              },
+              {
+                "value": "leaf",
+                "label": "Leaf"
+              },
+              {
+                "value": "leather",
+                "label": "Leather"
+              },
+              {
+                "value": "lock",
+                "label": "Lock"
+              },
+              {
+                "value": "map_pin",
+                "label": "Map pin"
+              },
+              {
+                "value": "pants",
+                "label": "Pants"
+              },
+              {
+                "value": "percent",
+                "label": "Percent"
+              },
+              {
+                "value": "plane",
+                "label": "Plane"
+              },
+              {
+                "value": "price_tag",
+                "label": "Price tag"
+              },
+              {
+                "value": "question_mark",
+                "label": "Question mark"
+              },
+              {
+                "value": "return",
+                "label": "Return"
+              },
+              {
+                "value": "ruler",
+                "label": "Ruler"
+              },
+              {
+                "value": "scissors",
+                "label": "Scissors"
+              },
+              {
+                "value": "shirt",
+                "label": "Shirt"
+              },
+              {
+                "value": "shoe",
+                "label": "Shoe"
+              },
+              {
+                "value": "silhouette",
+                "label": "Silhouette"
+              },
+              {
+                "value": "star",
+                "label": "Star"
+              },
+              {
+                "value": "truck",
+                "label": "Truck"
+              },
+              {
+                "value": "washing",
+                "label": "Washing"
+              }
+            ]
           },
           {
             "type": "checkbox",
@@ -2083,143 +2115,143 @@
             "label": "Icon",
             "default": "check_mark",
             "options": [
-  {
-    "value": "none",
-    "label": "None"
-  },
-  {
-    "value": "award",
-    "label": "Award"
-  },
-  {
-    "value": "box",
-    "label": "Box"
-  },
-  {
-    "value": "briefcase",
-    "label": "Briefcase"
-  },
-  {
-    "value": "calendar",
-    "label": "Calendar"
-  },
-  {
-    "value": "chat_bubble",
-    "label": "Chat bubble"
-  },
-  {
-    "value": "check_mark",
-    "label": "Check mark"
-  },
-  {
-    "value": "clock",
-    "label": "Clock"
-  },
-  {
-    "value": "credit_card",
-    "label": "Credit card"
-  },
-  {
-    "value": "dollar_sign",
-    "label": "Dollar sign"
-  },
-  {
-    "value": "dryer",
-    "label": "Dryer"
-  },
-  {
-    "value": "eye",
-    "label": "Eye"
-  },
-  {
-    "value": "feather",
-    "label": "Feather"
-  },
-  {
-    "value": "gift",
-    "label": "Gift"
-  },
-  {
-    "value": "heart",
-    "label": "Heart"
-  },
-  {
-    "value": "iron",
-    "label": "Iron"
-  },
-  {
-    "value": "leaf",
-    "label": "Leaf"
-  },
-  {
-    "value": "leather",
-    "label": "Leather"
-  },
-  {
-    "value": "lock",
-    "label": "Lock"
-  },
-  {
-    "value": "map_pin",
-    "label": "Map pin"
-  },
-  {
-    "value": "pants",
-    "label": "Pants"
-  },
-  {
-    "value": "percent",
-    "label": "Percent"
-  },
-  {
-    "value": "plane",
-    "label": "Plane"
-  },
-  {
-    "value": "price_tag",
-    "label": "Price tag"
-  },
-  {
-    "value": "question_mark",
-    "label": "Question mark"
-  },
-  {
-    "value": "return",
-    "label": "Return"
-  },
-  {
-    "value": "ruler",
-    "label": "Ruler"
-  },
-  {
-    "value": "scissors",
-    "label": "Scissors"
-  },
-  {
-    "value": "shirt",
-    "label": "Shirt"
-  },
-  {
-    "value": "shoe",
-    "label": "Shoe"
-  },
-  {
-    "value": "silhouette",
-    "label": "Silhouette"
-  },
-  {
-    "value": "star",
-    "label": "Star"
-  },
-  {
-    "value": "truck",
-    "label": "Truck"
-  },
-  {
-    "value": "washing",
-    "label": "Washing"
-  }
-]
+              {
+                "value": "none",
+                "label": "None"
+              },
+              {
+                "value": "award",
+                "label": "Award"
+              },
+              {
+                "value": "box",
+                "label": "Box"
+              },
+              {
+                "value": "briefcase",
+                "label": "Briefcase"
+              },
+              {
+                "value": "calendar",
+                "label": "Calendar"
+              },
+              {
+                "value": "chat_bubble",
+                "label": "Chat bubble"
+              },
+              {
+                "value": "check_mark",
+                "label": "Check mark"
+              },
+              {
+                "value": "clock",
+                "label": "Clock"
+              },
+              {
+                "value": "credit_card",
+                "label": "Credit card"
+              },
+              {
+                "value": "dollar_sign",
+                "label": "Dollar sign"
+              },
+              {
+                "value": "dryer",
+                "label": "Dryer"
+              },
+              {
+                "value": "eye",
+                "label": "Eye"
+              },
+              {
+                "value": "feather",
+                "label": "Feather"
+              },
+              {
+                "value": "gift",
+                "label": "Gift"
+              },
+              {
+                "value": "heart",
+                "label": "Heart"
+              },
+              {
+                "value": "iron",
+                "label": "Iron"
+              },
+              {
+                "value": "leaf",
+                "label": "Leaf"
+              },
+              {
+                "value": "leather",
+                "label": "Leather"
+              },
+              {
+                "value": "lock",
+                "label": "Lock"
+              },
+              {
+                "value": "map_pin",
+                "label": "Map pin"
+              },
+              {
+                "value": "pants",
+                "label": "Pants"
+              },
+              {
+                "value": "percent",
+                "label": "Percent"
+              },
+              {
+                "value": "plane",
+                "label": "Plane"
+              },
+              {
+                "value": "price_tag",
+                "label": "Price tag"
+              },
+              {
+                "value": "question_mark",
+                "label": "Question mark"
+              },
+              {
+                "value": "return",
+                "label": "Return"
+              },
+              {
+                "value": "ruler",
+                "label": "Ruler"
+              },
+              {
+                "value": "scissors",
+                "label": "Scissors"
+              },
+              {
+                "value": "shirt",
+                "label": "Shirt"
+              },
+              {
+                "value": "shoe",
+                "label": "Shoe"
+              },
+              {
+                "value": "silhouette",
+                "label": "Silhouette"
+              },
+              {
+                "value": "star",
+                "label": "Star"
+              },
+              {
+                "value": "truck",
+                "label": "Truck"
+              },
+              {
+                "value": "washing",
+                "label": "Washing"
+              }
+            ]
           },
           {
             "type": "image_picker",
@@ -2248,143 +2280,143 @@
             "label": "Icon",
             "default": "check_mark",
             "options": [
-  {
-    "value": "none",
-    "label": "None"
-  },
-  {
-    "value": "award",
-    "label": "Award"
-  },
-  {
-    "value": "box",
-    "label": "Box"
-  },
-  {
-    "value": "briefcase",
-    "label": "Briefcase"
-  },
-  {
-    "value": "calendar",
-    "label": "Calendar"
-  },
-  {
-    "value": "chat_bubble",
-    "label": "Chat bubble"
-  },
-  {
-    "value": "check_mark",
-    "label": "Check mark"
-  },
-  {
-    "value": "clock",
-    "label": "Clock"
-  },
-  {
-    "value": "credit_card",
-    "label": "Credit card"
-  },
-  {
-    "value": "dollar_sign",
-    "label": "Dollar sign"
-  },
-  {
-    "value": "dryer",
-    "label": "Dryer"
-  },
-  {
-    "value": "eye",
-    "label": "Eye"
-  },
-  {
-    "value": "feather",
-    "label": "Feather"
-  },
-  {
-    "value": "gift",
-    "label": "Gift"
-  },
-  {
-    "value": "heart",
-    "label": "Heart"
-  },
-  {
-    "value": "iron",
-    "label": "Iron"
-  },
-  {
-    "value": "leaf",
-    "label": "Leaf"
-  },
-  {
-    "value": "leather",
-    "label": "Leather"
-  },
-  {
-    "value": "lock",
-    "label": "Lock"
-  },
-  {
-    "value": "map_pin",
-    "label": "Map pin"
-  },
-  {
-    "value": "pants",
-    "label": "Pants"
-  },
-  {
-    "value": "percent",
-    "label": "Percent"
-  },
-  {
-    "value": "plane",
-    "label": "Plane"
-  },
-  {
-    "value": "price_tag",
-    "label": "Price tag"
-  },
-  {
-    "value": "question_mark",
-    "label": "Question mark"
-  },
-  {
-    "value": "return",
-    "label": "Return"
-  },
-  {
-    "value": "ruler",
-    "label": "Ruler"
-  },
-  {
-    "value": "scissors",
-    "label": "Scissors"
-  },
-  {
-    "value": "shirt",
-    "label": "Shirt"
-  },
-  {
-    "value": "shoe",
-    "label": "Shoe"
-  },
-  {
-    "value": "silhouette",
-    "label": "Silhouette"
-  },
-  {
-    "value": "star",
-    "label": "Star"
-  },
-  {
-    "value": "truck",
-    "label": "Truck"
-  },
-  {
-    "value": "washing",
-    "label": "Washing"
-  }
-]
+              {
+                "value": "none",
+                "label": "None"
+              },
+              {
+                "value": "award",
+                "label": "Award"
+              },
+              {
+                "value": "box",
+                "label": "Box"
+              },
+              {
+                "value": "briefcase",
+                "label": "Briefcase"
+              },
+              {
+                "value": "calendar",
+                "label": "Calendar"
+              },
+              {
+                "value": "chat_bubble",
+                "label": "Chat bubble"
+              },
+              {
+                "value": "check_mark",
+                "label": "Check mark"
+              },
+              {
+                "value": "clock",
+                "label": "Clock"
+              },
+              {
+                "value": "credit_card",
+                "label": "Credit card"
+              },
+              {
+                "value": "dollar_sign",
+                "label": "Dollar sign"
+              },
+              {
+                "value": "dryer",
+                "label": "Dryer"
+              },
+              {
+                "value": "eye",
+                "label": "Eye"
+              },
+              {
+                "value": "feather",
+                "label": "Feather"
+              },
+              {
+                "value": "gift",
+                "label": "Gift"
+              },
+              {
+                "value": "heart",
+                "label": "Heart"
+              },
+              {
+                "value": "iron",
+                "label": "Iron"
+              },
+              {
+                "value": "leaf",
+                "label": "Leaf"
+              },
+              {
+                "value": "leather",
+                "label": "Leather"
+              },
+              {
+                "value": "lock",
+                "label": "Lock"
+              },
+              {
+                "value": "map_pin",
+                "label": "Map pin"
+              },
+              {
+                "value": "pants",
+                "label": "Pants"
+              },
+              {
+                "value": "percent",
+                "label": "Percent"
+              },
+              {
+                "value": "plane",
+                "label": "Plane"
+              },
+              {
+                "value": "price_tag",
+                "label": "Price tag"
+              },
+              {
+                "value": "question_mark",
+                "label": "Question mark"
+              },
+              {
+                "value": "return",
+                "label": "Return"
+              },
+              {
+                "value": "ruler",
+                "label": "Ruler"
+              },
+              {
+                "value": "scissors",
+                "label": "Scissors"
+              },
+              {
+                "value": "shirt",
+                "label": "Shirt"
+              },
+              {
+                "value": "shoe",
+                "label": "Shoe"
+              },
+              {
+                "value": "silhouette",
+                "label": "Silhouette"
+              },
+              {
+                "value": "star",
+                "label": "Star"
+              },
+              {
+                "value": "truck",
+                "label": "Truck"
+              },
+              {
+                "value": "washing",
+                "label": "Washing"
+              }
+            ]
           },
           {
             "type": "image_picker",
@@ -2413,143 +2445,143 @@
             "label": "Icon",
             "default": "check_mark",
             "options": [
-  {
-    "value": "none",
-    "label": "None"
-  },
-  {
-    "value": "award",
-    "label": "Award"
-  },
-  {
-    "value": "box",
-    "label": "Box"
-  },
-  {
-    "value": "briefcase",
-    "label": "Briefcase"
-  },
-  {
-    "value": "calendar",
-    "label": "Calendar"
-  },
-  {
-    "value": "chat_bubble",
-    "label": "Chat bubble"
-  },
-  {
-    "value": "check_mark",
-    "label": "Check mark"
-  },
-  {
-    "value": "clock",
-    "label": "Clock"
-  },
-  {
-    "value": "credit_card",
-    "label": "Credit card"
-  },
-  {
-    "value": "dollar_sign",
-    "label": "Dollar sign"
-  },
-  {
-    "value": "dryer",
-    "label": "Dryer"
-  },
-  {
-    "value": "eye",
-    "label": "Eye"
-  },
-  {
-    "value": "feather",
-    "label": "Feather"
-  },
-  {
-    "value": "gift",
-    "label": "Gift"
-  },
-  {
-    "value": "heart",
-    "label": "Heart"
-  },
-  {
-    "value": "iron",
-    "label": "Iron"
-  },
-  {
-    "value": "leaf",
-    "label": "Leaf"
-  },
-  {
-    "value": "leather",
-    "label": "Leather"
-  },
-  {
-    "value": "lock",
-    "label": "Lock"
-  },
-  {
-    "value": "map_pin",
-    "label": "Map pin"
-  },
-  {
-    "value": "pants",
-    "label": "Pants"
-  },
-  {
-    "value": "percent",
-    "label": "Percent"
-  },
-  {
-    "value": "plane",
-    "label": "Plane"
-  },
-  {
-    "value": "price_tag",
-    "label": "Price tag"
-  },
-  {
-    "value": "question_mark",
-    "label": "Question mark"
-  },
-  {
-    "value": "return",
-    "label": "Return"
-  },
-  {
-    "value": "ruler",
-    "label": "Ruler"
-  },
-  {
-    "value": "scissors",
-    "label": "Scissors"
-  },
-  {
-    "value": "shirt",
-    "label": "Shirt"
-  },
-  {
-    "value": "shoe",
-    "label": "Shoe"
-  },
-  {
-    "value": "silhouette",
-    "label": "Silhouette"
-  },
-  {
-    "value": "star",
-    "label": "Star"
-  },
-  {
-    "value": "truck",
-    "label": "Truck"
-  },
-  {
-    "value": "washing",
-    "label": "Washing"
-  }
-]
+              {
+                "value": "none",
+                "label": "None"
+              },
+              {
+                "value": "award",
+                "label": "Award"
+              },
+              {
+                "value": "box",
+                "label": "Box"
+              },
+              {
+                "value": "briefcase",
+                "label": "Briefcase"
+              },
+              {
+                "value": "calendar",
+                "label": "Calendar"
+              },
+              {
+                "value": "chat_bubble",
+                "label": "Chat bubble"
+              },
+              {
+                "value": "check_mark",
+                "label": "Check mark"
+              },
+              {
+                "value": "clock",
+                "label": "Clock"
+              },
+              {
+                "value": "credit_card",
+                "label": "Credit card"
+              },
+              {
+                "value": "dollar_sign",
+                "label": "Dollar sign"
+              },
+              {
+                "value": "dryer",
+                "label": "Dryer"
+              },
+              {
+                "value": "eye",
+                "label": "Eye"
+              },
+              {
+                "value": "feather",
+                "label": "Feather"
+              },
+              {
+                "value": "gift",
+                "label": "Gift"
+              },
+              {
+                "value": "heart",
+                "label": "Heart"
+              },
+              {
+                "value": "iron",
+                "label": "Iron"
+              },
+              {
+                "value": "leaf",
+                "label": "Leaf"
+              },
+              {
+                "value": "leather",
+                "label": "Leather"
+              },
+              {
+                "value": "lock",
+                "label": "Lock"
+              },
+              {
+                "value": "map_pin",
+                "label": "Map pin"
+              },
+              {
+                "value": "pants",
+                "label": "Pants"
+              },
+              {
+                "value": "percent",
+                "label": "Percent"
+              },
+              {
+                "value": "plane",
+                "label": "Plane"
+              },
+              {
+                "value": "price_tag",
+                "label": "Price tag"
+              },
+              {
+                "value": "question_mark",
+                "label": "Question mark"
+              },
+              {
+                "value": "return",
+                "label": "Return"
+              },
+              {
+                "value": "ruler",
+                "label": "Ruler"
+              },
+              {
+                "value": "scissors",
+                "label": "Scissors"
+              },
+              {
+                "value": "shirt",
+                "label": "Shirt"
+              },
+              {
+                "value": "shoe",
+                "label": "Shoe"
+              },
+              {
+                "value": "silhouette",
+                "label": "Silhouette"
+              },
+              {
+                "value": "star",
+                "label": "Star"
+              },
+              {
+                "value": "truck",
+                "label": "Truck"
+              },
+              {
+                "value": "washing",
+                "label": "Washing"
+              }
+            ]
           },
           {
             "type": "image_picker",
@@ -2578,143 +2610,143 @@
             "label": "Icon",
             "default": "check_mark",
             "options": [
-  {
-    "value": "none",
-    "label": "None"
-  },
-  {
-    "value": "award",
-    "label": "Award"
-  },
-  {
-    "value": "box",
-    "label": "Box"
-  },
-  {
-    "value": "briefcase",
-    "label": "Briefcase"
-  },
-  {
-    "value": "calendar",
-    "label": "Calendar"
-  },
-  {
-    "value": "chat_bubble",
-    "label": "Chat bubble"
-  },
-  {
-    "value": "check_mark",
-    "label": "Check mark"
-  },
-  {
-    "value": "clock",
-    "label": "Clock"
-  },
-  {
-    "value": "credit_card",
-    "label": "Credit card"
-  },
-  {
-    "value": "dollar_sign",
-    "label": "Dollar sign"
-  },
-  {
-    "value": "dryer",
-    "label": "Dryer"
-  },
-  {
-    "value": "eye",
-    "label": "Eye"
-  },
-  {
-    "value": "feather",
-    "label": "Feather"
-  },
-  {
-    "value": "gift",
-    "label": "Gift"
-  },
-  {
-    "value": "heart",
-    "label": "Heart"
-  },
-  {
-    "value": "iron",
-    "label": "Iron"
-  },
-  {
-    "value": "leaf",
-    "label": "Leaf"
-  },
-  {
-    "value": "leather",
-    "label": "Leather"
-  },
-  {
-    "value": "lock",
-    "label": "Lock"
-  },
-  {
-    "value": "map_pin",
-    "label": "Map pin"
-  },
-  {
-    "value": "pants",
-    "label": "Pants"
-  },
-  {
-    "value": "percent",
-    "label": "Percent"
-  },
-  {
-    "value": "plane",
-    "label": "Plane"
-  },
-  {
-    "value": "price_tag",
-    "label": "Price tag"
-  },
-  {
-    "value": "question_mark",
-    "label": "Question mark"
-  },
-  {
-    "value": "return",
-    "label": "Return"
-  },
-  {
-    "value": "ruler",
-    "label": "Ruler"
-  },
-  {
-    "value": "scissors",
-    "label": "Scissors"
-  },
-  {
-    "value": "shirt",
-    "label": "Shirt"
-  },
-  {
-    "value": "shoe",
-    "label": "Shoe"
-  },
-  {
-    "value": "silhouette",
-    "label": "Silhouette"
-  },
-  {
-    "value": "star",
-    "label": "Star"
-  },
-  {
-    "value": "truck",
-    "label": "Truck"
-  },
-  {
-    "value": "washing",
-    "label": "Washing"
-  }
-]
+              {
+                "value": "none",
+                "label": "None"
+              },
+              {
+                "value": "award",
+                "label": "Award"
+              },
+              {
+                "value": "box",
+                "label": "Box"
+              },
+              {
+                "value": "briefcase",
+                "label": "Briefcase"
+              },
+              {
+                "value": "calendar",
+                "label": "Calendar"
+              },
+              {
+                "value": "chat_bubble",
+                "label": "Chat bubble"
+              },
+              {
+                "value": "check_mark",
+                "label": "Check mark"
+              },
+              {
+                "value": "clock",
+                "label": "Clock"
+              },
+              {
+                "value": "credit_card",
+                "label": "Credit card"
+              },
+              {
+                "value": "dollar_sign",
+                "label": "Dollar sign"
+              },
+              {
+                "value": "dryer",
+                "label": "Dryer"
+              },
+              {
+                "value": "eye",
+                "label": "Eye"
+              },
+              {
+                "value": "feather",
+                "label": "Feather"
+              },
+              {
+                "value": "gift",
+                "label": "Gift"
+              },
+              {
+                "value": "heart",
+                "label": "Heart"
+              },
+              {
+                "value": "iron",
+                "label": "Iron"
+              },
+              {
+                "value": "leaf",
+                "label": "Leaf"
+              },
+              {
+                "value": "leather",
+                "label": "Leather"
+              },
+              {
+                "value": "lock",
+                "label": "Lock"
+              },
+              {
+                "value": "map_pin",
+                "label": "Map pin"
+              },
+              {
+                "value": "pants",
+                "label": "Pants"
+              },
+              {
+                "value": "percent",
+                "label": "Percent"
+              },
+              {
+                "value": "plane",
+                "label": "Plane"
+              },
+              {
+                "value": "price_tag",
+                "label": "Price tag"
+              },
+              {
+                "value": "question_mark",
+                "label": "Question mark"
+              },
+              {
+                "value": "return",
+                "label": "Return"
+              },
+              {
+                "value": "ruler",
+                "label": "Ruler"
+              },
+              {
+                "value": "scissors",
+                "label": "Scissors"
+              },
+              {
+                "value": "shirt",
+                "label": "Shirt"
+              },
+              {
+                "value": "shoe",
+                "label": "Shoe"
+              },
+              {
+                "value": "silhouette",
+                "label": "Silhouette"
+              },
+              {
+                "value": "star",
+                "label": "Star"
+              },
+              {
+                "value": "truck",
+                "label": "Truck"
+              },
+              {
+                "value": "washing",
+                "label": "Washing"
+              }
+            ]
           },
           {
             "type": "image_picker",
@@ -2976,6 +3008,28 @@
               {
                 "value": "large",
                 "label": "Large"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "related_products",
+        "name": "Related products",
+        "settings": [
+          {
+            "type": "select",
+            "id": "type",
+            "label": "Type",
+            "default": "color_swatch",
+            "options": [
+              {
+                "value": "color_swatch",
+                "label": "Color Swatch"
+              },
+              {
+                "value": "image",
+                "label": "Image"
               }
             ]
           }
