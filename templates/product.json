@@ -12,6 +12,22 @@
     "main": {
       "type": "main-product",
       "blocks": {
+        "accordion_eeWNq6": {
+          "type": "accordion",
+          "settings": {
+            "icon": "none",
+            "title": "dfvef",
+            "content": "<p>Add the content to appear when the content is expanded</p>",
+            "page": "",
+            "open": false
+          }
+        },
+        "product_tags_BaJVDf": {
+          "type": "product_tags",
+          "settings": {
+            "tag_style": "badge"
+          }
+        },
         "title": {
           "type": "title",
           "settings": {
@@ -51,32 +67,16 @@
         "buy_buttons": {
           "type": "buy_buttons",
           "settings": {
-            "show_quantity_selector": true,
+            "show_quantity_selector": false,
             "enable_payment_button": false,
             "show_pickup_availability": false,
             "enable_mobile_sticky_cart": true,
             "show_gift_card_recipient": false
           }
-        },
-        "tabs": {
-          "type": "tabs",
-          "settings": {
-            "show_product_description": true,
-            "show_product_reviews": false,
-            "custom_reviews": "",
-            "tab_2_page": "",
-            "tab_2_title": "",
-            "tab_2_content": "",
-            "tab_3_page": "",
-            "tab_3_title": "",
-            "tab_3_content": "",
-            "tab_4_page": "",
-            "tab_4_title": "",
-            "tab_4_content": ""
-          }
         }
       },
       "block_order": [
+        "product_tags_BaJVDf",
         "title",
         "judge_me_reviews_preview_badge_YyCV38",
         "price",
@@ -84,7 +84,7 @@
         "related_products_YtB9B3",
         "variant_picker",
         "buy_buttons",
-        "tabs"
+        "accordion_eeWNq6"
       ],
       "settings": {
         "media_style": "two-column",

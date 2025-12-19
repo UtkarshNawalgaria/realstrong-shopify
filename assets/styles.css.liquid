@@ -4733,8 +4733,9 @@ body.cc-popup-no-scroll {
 
 .cc-accordion-item__title {
   font-weight: 500;
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 5px;
 }
 @media (max-width: 767px) {
   .cc-accordion-item__title {
@@ -11654,6 +11655,10 @@ html.touch .product-block--quickbuy.collection-block .cc-quick-buy-btn {
 }
 .product-area .price-area .was-price {
   margin-right: 0.4em;
+  font-size: 16px;
+}
+.product-area .price-area .current-price {
+  font-weight: bold;
 }
 .product-area .price-area .unit-price {
   padding-left: 0.5em;
@@ -16695,4 +16700,17 @@ body {
 .product-block .image .image-inner:hover .carousel-btn {
   visibility: visible;
   opacity: 1;
+}
+
+.product__tags {
+  display: flex;
+  gap: 5px;
+  padding-bottom: 5px;
+}
+
+.product__tags .tag {
+	padding: 2px 4px;
+	border: 1px solid black;
+	border-radius: 5px;
+	font-size: 14px;
 }
