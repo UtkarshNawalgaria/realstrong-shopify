@@ -1,0 +1,14 @@
+{% liquid
+  assign highlights_object = product.metafields.custom.highlights.value
+%}
+
+{% if highlights_object.highlights.value.size != 0 %}
+  <div class="product-highlights">
+    <h4 style="text-align: left; text-transform: uppercase;">Product Highlights</h4>
+    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+      {% for item in highlights_object.highlights.value %}
+        <p>{{ item }}</p>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}

@@ -72,6 +72,10 @@
       </div>
     {% endif %}
 
+    {% if section.settings.show_sub_collections == true %}
+      {% render 'sub-collections', collection_list: section.settings.sub_collections_list %}
+    {% endif %}
+
     {% comment %} Filter drawer button {% endcomment %}
     {% if section.settings.filter_mode == 'drawer' %}
       {% assign has_filters = false %}
@@ -567,6 +571,22 @@
           "label": "Bottom"
         }
       ]
+    },
+    {
+      "type": "header",
+      "content": "Sub Collections"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sub_collections",
+      "label": "Show Sub Collections",
+      "default": false
+    },
+    {
+      "type": "collection_list",  
+      "id": "sub_collections_list",
+      "label": "Select collection list for sub collections",
+      "info": "Sub collections will be displayed from the selected collection list."
     },
     {
       "type": "header",

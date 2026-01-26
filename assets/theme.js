@@ -6344,7 +6344,7 @@
         $.colorbox({
           inline: true,
           fixed: true,
-          maxHeight: "80%",
+          height: "700px",
           href: '#size-chart-content > .size-chart',
           onOpen: () => {
             theme.viewport.scroll.lock();

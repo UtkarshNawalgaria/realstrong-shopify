@@ -16,11 +16,7 @@
         "show_collection_image": false,
         "description_position": "top",
         "show_sub_collections": true,
-        "sub_collections_list": [
-          "amar-jawan",
-          "backpacks",
-          "commando-black"
-        ],
+        "sub_collections_list": "{{ collection.metafields.custom.sub_collections.value }}",
         "layout": "rows",
         "grid": 4,
         "grid_mobile": "2",

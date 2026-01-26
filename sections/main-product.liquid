@@ -559,9 +559,7 @@
                                 {{- option.name -}}
                               </label>
                               {% if option.name == "Size" %}
-                                <span class="cc-size-guide-link-wrapper">
-                                  <a href="#size-chart-content" class="size-chart-link">Size Guide</a>
-                                </span>
+                                {{ size_chart_html }}
                               {% endif %}
                             </div>
                             <select
@@ -1344,6 +1342,8 @@
                       {% endfor %}
                     </div>
                   {% endif %}
+                {% when 'product_highlights' %}
+                  {% render 'highlights', product: product %}
                 {%- endcase -%}
             {%- endfor -%}
 
@@ -3375,6 +3375,14 @@
           ]
         }
       ]
+    },
+    {
+      "type": "product_highlights",
+      "name": "Product Highlights",
+      "settings": [{
+        "type": "header",
+        "content": "sdger"
+      }]
     }
   ],
   "settings": [
