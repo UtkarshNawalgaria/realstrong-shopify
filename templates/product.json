@@ -12,16 +12,6 @@
     "main": {
       "type": "main-product",
       "blocks": {
-        "accordion_eeWNq6": {
-          "type": "accordion",
-          "settings": {
-            "icon": "none",
-            "title": "dfvef",
-            "content": "<p>Add the content to appear when the content is expanded</p>",
-            "page": "",
-            "open": false
-          }
-        },
         "product_tags_BaJVDf": {
           "type": "product_tags",
           "settings": {
@@ -73,6 +63,16 @@
             "enable_mobile_sticky_cart": true,
             "show_gift_card_recipient": false
           }
+        },
+        "accordion_eeWNq6": {
+          "type": "accordion",
+          "settings": {
+            "icon": "none",
+            "title": "dfvef",
+            "content": "<p>Add the content to appear when the content is expanded</p>",
+            "page": "",
+            "open": false
+          }
         }
       },
       "block_order": [
@@ -110,7 +110,7 @@
         "title": "You may also like",
         "hide_swatches": false,
         "show_vendor": false,
-        "grid": 3
+        "grid": 4
       }
     }
   },

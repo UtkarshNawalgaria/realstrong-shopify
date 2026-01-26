@@ -117,6 +117,17 @@
         aria-label="{{ product.title | escape }}"
         tabindex="-1"
       >
+        {%- comment -%}
+          Count images BEFORE rendering carousel.
+          The previous code used image_count before it was assigned,
+          which caused single-image detection to be unreliable.
+        {%- endcomment -%}
+        {%- assign image_count = 0 -%}
+        {%- for media in product.media -%}
+          {%- if media.media_type == 'image' -%}
+            {%- assign image_count = image_count | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
         <div
           class="product-images-carousel"
           data-product-id="{{ product.id }}"
@@ -124,36 +135,37 @@
         >
           <div class="carousel-container">
             <div class="carousel-track" data-carousel-track>
-              {%- for media in product.media limit: 5 -%}
+              {%- comment -%}
+                Use an image-only index for "active" and slide index.
+                The previous code used forloop.first/index0 on product.media,
+                which can include videos, leading to no active slide.
+              {%- endcomment -%}
+              {%- assign image_index0 = 0 -%}
+              {%- for media in product.media limit: 10 -%}
                 {%- if media.media_type == 'image' -%}
                   <div
-                    class="carousel-slide {% if forloop.first %}active{% endif %}"
-                    data-slide-index="{{ forloop.index0 }}"
+                    class="carousel-slide {% if image_index0 == 0 %}active{% endif %}"
+                    data-slide-index="{{ image_index0 }}"
                   >
                     <div class="image__first">
-                      {% if mp4_url != blank and forloop.first %}
+                      {% if mp4_url != blank and image_index0 == 0 %}
                         {% render 'inline-video', video: mp4_url, image: media.preview_image %}
                       {% else %}
                         {% render 'responsive-image', image: media.preview_image, min_aspect_ratio: 0.6 %}
                       {% endif %}
 
                       {% unless settings.prod_label_layout contains 'marquee' %}
-                        {% if forloop.first %}
+                        {% if image_index0 == 0 %}
                           {% render 'product-label', product: product, cheapest_variant: cheapest_variant %}
                         {% endif %}
                       {% endunless %}
                     </div>
                   </div>
+                  {%- assign image_index0 = image_index0 | plus: 1 -%}
+                  {%- if image_index0 >= 5 -%}{% break %}{%- endif -%}
                 {%- endif -%}
               {%- endfor -%}
             </div>
-
-            {%- assign image_count = 0 -%}
-            {%- for media in product.media -%}
-              {%- if media.media_type == 'image' -%}
-                {%- assign image_count = image_count | plus: 1 -%}
-              {%- endif -%}
-            {%- endfor -%}
 
             {% if image_count > 1 %}
               <button
@@ -175,12 +187,6 @@
           </div>
         </div>
       </a>
-
-      {%- comment -%} Selected Color Name Display {%- endcomment -%}
-      <div class="selected-color-name" data-selected-color-name style="display: none;">
-        <span class="selected-color-label">Color: </span>
-        <span class="selected-color-value"></span>
-      </div>
     </div>
 
     {%- if settings.swatch_enabled and settings.prod_block_swatches and hide_swatches != true -%}
@@ -324,6 +330,12 @@
       {% if show_vendor %}
         <span class="vendor">{{ product.vendor }}</span>
       {% endif %}
+
+      {%- comment -%} Selected Color Name Display {%- endcomment -%}
+      <div class="selected-color-name" data-selected-color-name>
+        <span class="selected-color-label">Color: </span>
+        <span class="selected-color-value">{{ product.metafields.custom.color.value.name }}</span>
+      </div>
 
       <div class="price">
         {% if product.price_varies %}{{ 'products.listing.from' | t }}{% endif %}

@@ -548,20 +548,22 @@
                                 {%- endif -%}
                               {%- endif -%}
                             {% endcapture %}
-                            <label
-                              {% if option.name == 'default' %}
-                                class="hidden"
+                            <div {% if option.name == "Size" %}style="display: flex; align-items: center; justify-content: space-between;"{% endif %}>
+                              <label
+                                {% if option.name == 'default' %}
+                                  class="hidden"
+                                {% endif %}
+                                for="option-{{ option.name | handle }}-{{ product.id }}"
+                                style="margin-bottom: 0;"
+                              >
+                                {{- option.name -}}
+                              </label>
+                              {% if option.name == "Size" %}
+                                <span class="cc-size-guide-link-wrapper">
+                                  <a href="#size-chart-content" class="size-chart-link">Size Guide</a>
+                                </span>
                               {% endif %}
-                              for="option-{{ option.name | handle }}-{{ product.id }}"
-                            >
-                              {{- option.name -}}
-                              {%- if show_swatches -%}
-                                : <span class="cc-swatches__label">{{ option.selected_value }}</span>
-                              {%- endif -%}
-                              {%- if block.settings.variant_style == 'underlined' and show_swatches == false -%}
-                                {{ size_chart_html }}
-                              {%- endif -%}
-                            </label>
+                            </div>
                             <select
                               id="option-{{ option.name | handle }}-{{ product.id }}"
                               {% if block.settings.variant_style == 'underlined' or show_swatches %}
@@ -746,7 +748,7 @@
 
                     <div
                       class="
-                        product-detail__form__action product-detail__gap-lg
+                        product-detail__form__action
                         {% if block.settings.show_quantity_selector %}product-detail__form__options--with-quantity{% endif %}
                         {% if enable_dynamic_payment_button %}with-payment-button{% endif %}
                       "
@@ -1314,7 +1316,7 @@
                   %}
                   {% if related_products_count > 0 %}
                     <div class="product-detail__form__related_products">
-                      <label class="label" style="font-weight: 600; font-size: 16px; text-transform: none;"
+                      <label class="label" style="font-weight: 600; font-size: 14px; text-transform: none;"
                         >Color: <a href="{{ color_collection.url }}">{{ product.metafields.custom.color.value.name -}}</a>
                       </label>
                       <div class="related-products-container" data-type="{{ block.settings.type }}">

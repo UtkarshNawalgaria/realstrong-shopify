@@ -12,7 +12,7 @@
     "col_text": "#423f3f",
     "col_headings": "#212121",
     "col_links": "#b79987",
-    "col_page_bg": "#ddcfb8",
+    "col_page_bg": "#ffffff",
     "col_stars": "#dbcac0",
     "col_head_links": "#ffffff",
     "col_head_links_alt": "#ffffff",
@@ -110,13 +110,13 @@
           "transparent_home_only": true,
           "nav_positioning": "peek",
           "logo": "shopify://shop_images/REAL_STRONG_FINAL_LOGO_-_website-04_79b89ef2-ee9a-49c9-a0ec-116cb815aba2.png",
-          "desktop_logo_width": 200,
+          "desktop_logo_width": 120,
           "mobile_logo_width": 150,
           "use_alt_logo_when_active": false,
           "logo_h1": false,
           "show_announcement": true,
           "announcement_home_only": true,
-          "announcement_text": "Free Shipping On Orders Over $50",
+          "announcement_text": "Free Shipping On Orders Over Rs 5000",
           "announcement_text_size": 14,
           "announcement_link": "",
           "show_country_selector": false,
@@ -142,8 +142,8 @@
           "1601536195594": {
             "type": "menu",
             "settings": {
-              "title": "Policy Links",
-              "menu": "footer"
+              "title": "Policies",
+              "menu": "policy-menu"
             }
           },
           "1601536182566": {

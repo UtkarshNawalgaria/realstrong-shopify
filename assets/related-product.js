@@ -5,9 +5,10 @@
  * Provides smooth transitions and accessibility support
  */
 
-class RelatedProductColors {
+class RelatedProductColors extends HTMLElement {
   constructor() {
-    this.containers = [];
+    super();
+
     this.imageCache = new Map();
     this.animationSpeed = 300;
     this.isLoading = false;
@@ -19,13 +20,8 @@ class RelatedProductColors {
   }
 
   init() {
-    // Find all related product color containers
-    this.containers = document.querySelectorAll(".related-product-colors");
-    if (this.containers.length === 0) return;
-    console.log(this.containers)
-
     // Initialize each container (idempotent)
-    this.containers.forEach((container) => this.initContainer(container));
+    this.initContainer()
 
     // Initialize carousel functionality
     this.initializeCarousels();
@@ -34,53 +30,53 @@ class RelatedProductColors {
     this.setupGlobalListeners();
   }
 
-  initContainer(container) {
+  initContainer() {
     // Prevent duplicate initialization (important for filter/infinite scroll)
-    if (container.dataset.rpcInitialized === "true") return;
+    if (this.dataset.rpcInitialized === "true") return;
 
-    const blockId = container.dataset.blockId;
-    const swatchesData = this.parseSwatchData(container.dataset.colorSwatches);
+    const blockId = this.dataset.blockId;
+    const swatchesData = this.parseSwatchData(this.dataset.colorSwatches);
     const targetSelector =
-      container.dataset.targetImageSelector || ".product-images-carousel";
+      this.dataset.targetImageSelector || ".product-images-carousel";
 
     if (!blockId || !swatchesData) {
       console.warn("RelatedProductColors: Missing required data attributes", {
         blockId,
         swatchesData: !!swatchesData,
-        colorSwatchesAttr: container.dataset.colorSwatches,
+        colorSwatchesAttr: this.dataset.colorSwatches,
       });
       return;
     }
 
     // Mark as initialized (support BOTH flags so scheduleRefresh selector works)
-    container.dataset.rpcInitialized = "true";
-    container.setAttribute("data-rpc-initialized", "true");
+    this.dataset.rpcInitialized = "true";
+    this.setAttribute("data-rpc-initialized", "true");
 
     // Store container data
-    container._relatedColors = {
+    this._relatedColors = {
       blockId,
       swatchesData,
       targetSelector,
       currentIndex: Math.max(0, this.findCurrentIndex(swatchesData)),
-      imageElement: this.findImageElement(container, targetSelector),
+      imageElement: this.findImageElement(targetSelector),
       originalImage: null,
       originalCarousel: null,
     };
 
     // Store original carousel data
-    if (container._relatedColors.imageElement) {
-      const carouselEl = container._relatedColors.imageElement;
-      container._relatedColors.originalCarousel = {
+    if (this._relatedColors.imageElement) {
+      const carouselEl = this._relatedColors.imageElement;
+      this._relatedColors.originalCarousel = {
         productId: carouselEl.dataset.productId,
         innerHTML: carouselEl.innerHTML,
       };
     }
 
     // Setup swatch click handlers
-    this.setupSwatchHandlers(container);
+    this.setupSwatchHandlers();
 
     // Setup keyboard navigation
-    this.setupKeyboardNavigation(container);
+    this.setupKeyboardNavigation();
 
     // Preload images for better performance
     this.preloadImages(swatchesData);
@@ -120,9 +116,10 @@ class RelatedProductColors {
     return swatchesData.findIndex((swatch) => swatch.is_current === true);
   }
 
-  findImageElement(container, targetSelector) {
+  findImageElement(targetSelector) {
     // Look for carousel within the same product block
-    const productBlock = container.closest(".product-block, .cc-product-block");
+    const productBlock = this.closest(".product-block, .cc-product-block");
+    console.log(productBlock)
     if (!productBlock) {
       console.warn("RelatedProductColors: No product block found for container");
       return null;
@@ -130,8 +127,8 @@ class RelatedProductColors {
     return productBlock.querySelector(targetSelector);
   }
 
-  setupSwatchHandlers(container) {
-    const swatches = container.querySelectorAll(
+  setupSwatchHandlers() {
+    const swatches = this.querySelectorAll(
       ".related-product-colors__swatch"
     );
 
@@ -139,7 +136,7 @@ class RelatedProductColors {
       // Click handler
       swatch.addEventListener("click", (e) => {
         e.preventDefault();
-        this.handleSwatchClick(container, index);
+        this.handleSwatchClick(this, index);
       });
 
       // Touch handling for better mobile experience
@@ -155,14 +152,14 @@ class RelatedProductColors {
         // Only trigger if it's a tap, not a scroll
         if (touchDiff < 10) {
           e.preventDefault();
-          this.handleSwatchClick(container, index);
+          this.handleSwatchClick(this, index);
         }
       });
     });
   }
 
-  setupKeyboardNavigation(container) {
-    const swatches = container.querySelectorAll(
+  setupKeyboardNavigation() {
+    const swatches = this.querySelectorAll(
       ".related-product-colors__swatch"
     );
 
@@ -172,37 +169,37 @@ class RelatedProductColors {
           case "Enter":
           case " ":
             e.preventDefault();
-            this.handleSwatchClick(container, index);
+            this.handleSwatchClick(index);
             break;
 
           case "ArrowLeft":
           case "ArrowUp":
             e.preventDefault();
-            this.navigateToSwatch(container, index - 1);
+            this.navigateToSwatch(index - 1);
             break;
 
           case "ArrowRight":
           case "ArrowDown":
             e.preventDefault();
-            this.navigateToSwatch(container, index + 1);
+            this.navigateToSwatch(index + 1);
             break;
 
           case "Home":
             e.preventDefault();
-            this.navigateToSwatch(container, 0);
+            this.navigateToSwatch(0);
             break;
 
           case "End":
             e.preventDefault();
-            this.navigateToSwatch(container, swatches.length - 1);
+            this.navigateToSwatch(swatches.length - 1);
             break;
         }
       });
     });
   }
 
-  navigateToSwatch(container, targetIndex) {
-    const swatches = container.querySelectorAll(
+  navigateToSwatch(targetIndex) {
+    const swatches = this.querySelectorAll(
       ".related-product-colors__swatch"
     );
     const maxIndex = swatches.length - 1;
@@ -213,14 +210,14 @@ class RelatedProductColors {
     if (newIndex > maxIndex) newIndex = 0;
 
     // Update focus and tabindex
-    this.updateSwatchFocus(container, newIndex);
+    this.updateSwatchFocus(newIndex);
 
     // Focus the new swatch
     swatches[newIndex].focus();
   }
 
-  updateSwatchFocus(container, activeIndex) {
-    const swatches = container.querySelectorAll(
+  updateSwatchFocus(activeIndex) {
+    const swatches = this.querySelectorAll(
       ".related-product-colors__swatch"
     );
 
@@ -243,8 +240,8 @@ class RelatedProductColors {
     carouselElement.classList.toggle("rpc-loading", !!isLoading);
   }
 
-  setLoadingState(container, isLoading) {
-    const swatches = container.querySelectorAll(
+  setLoadingState(isLoading) {
+    const swatches = this.querySelectorAll(
       ".related-product-colors__swatch"
     );
 
@@ -335,10 +332,10 @@ class RelatedProductColors {
     });
   }
 
-  async handleSwatchClick(container, swatchIndex) {
+  async handleSwatchClick(swatchIndex) {
     if (this.isLoading) return;
 
-    const containerData = container._relatedColors;
+    const containerData = this._relatedColors;
     if (!containerData) return;
 
     const swatchData = containerData.swatchesData[swatchIndex];
@@ -351,10 +348,10 @@ class RelatedProductColors {
       this.isLoading = true;
 
       // Update swatch states immediately
-      this.updateSwatchFocus(container, swatchIndex);
+      this.updateSwatchFocus(swatchIndex);
 
       // Loading state on swatches + carousel overlay
-      this.setLoadingState(container, true);
+      this.setLoadingState(true);
       this.setCarouselLoading(containerData.imageElement, true);
 
       // Preload first image
@@ -377,12 +374,12 @@ class RelatedProductColors {
     } catch (error) {
       console.warn("RelatedProductColors: Error switching image", error);
       // Revert swatch state on error
-      this.updateSwatchFocus(container, containerData.currentIndex);
+      this.updateSwatchFocus(containerData.currentIndex);
     } finally {
       if (containerData?.imageElement) {
         this.setCarouselLoading(containerData.imageElement, false);
       }
-      this.setLoadingState(container, false);
+      this.setLoadingState(false);
       this.isLoading = false;
     }
   }
@@ -391,7 +388,7 @@ class RelatedProductColors {
     return new Promise((resolve, reject) => {
       try {
         // Update the color name display
-        this.updateColorName(carouselElement, swatchData.color_name);
+        // this.updateColorName(carouselElement, swatchData.color_name);
 
         // If no images provided, fall back to single image switching
         if (!swatchData.images || swatchData.images.length === 0) {
@@ -496,8 +493,8 @@ class RelatedProductColors {
     const templateSlide = this.getTemplateSlide(carouselElement);
 
     // Fade out current carousel
-    container.style.transition = `opacity ${this.animationSpeed}ms ease`;
-    container.style.opacity = "0";
+    this.style.transition = `opacity ${this.animationSpeed}ms ease`;
+    this.style.opacity = "0";
 
     setTimeout(() => {
       // Clear current slides/dots
@@ -534,8 +531,8 @@ class RelatedProductColors {
       });
 
       // Show/hide navigation based on image count
-      const prevBtn = container.querySelector(".carousel-btn--prev");
-      const nextBtn = container.querySelector(".carousel-btn--next");
+      const prevBtn = this.querySelector(".carousel-btn--prev");
+      const nextBtn = this.querySelector(".carousel-btn--next");
 
       if (images.length <= 1) {
         if (prevBtn) prevBtn.style.display = "none";
@@ -559,10 +556,10 @@ class RelatedProductColors {
       this.forceLoadImages(carouselElement);
 
       // Fade in
-      container.style.opacity = "1";
+      this.style.opacity = "1";
 
       setTimeout(() => {
-        container.style.transition = "";
+        this.style.transition = "";
         delete carouselElement.dataset.rpcCarouselInitialized;
         this.initializeCarousel(carouselElement);
       }, this.animationSpeed);
@@ -577,7 +574,6 @@ class RelatedProductColors {
     const colorNameElement = productBlock?.querySelector(
       "[data-selected-color-name]"
     );
-    console.log(colorNameElement)
 
     if (colorNameElement && colorName) {
       const colorValueElement = colorNameElement.querySelector(
@@ -680,9 +676,9 @@ class RelatedProductColors {
       nextBtn.parentNode.replaceChild(newNextBtnClone, nextBtn);
     }
 
-    const newPrevBtn = container.querySelector(".carousel-btn--prev");
-    const newNextBtn = container.querySelector(".carousel-btn--next");
-    const newDots = container.querySelectorAll(".carousel-dot");
+    const newPrevBtn = this.querySelector(".carousel-btn--prev");
+    const newNextBtn = this.querySelector(".carousel-btn--next");
+    const newDots = this.querySelectorAll(".carousel-dot");
 
     const goToSlide = (slideIndex) => {
       slides.forEach((slide) => slide.classList.remove("active"));
@@ -765,44 +761,35 @@ class RelatedProductColors {
 
   // Public method to reset all carousels to original
   resetAllImages() {
-    this.containers.forEach((container) => {
-      const containerData = container._relatedColors;
-      if (containerData?.imageElement && containerData.originalCarousel) {
-        const carouselElement = containerData.imageElement;
-        const originalCarousel = containerData.originalCarousel;
+    const containerData = this._relatedColors;
+    if (containerData?.imageElement && containerData.originalCarousel) {
+      const carouselElement = containerData.imageElement;
+      const originalCarousel = containerData.originalCarousel;
 
-        carouselElement.innerHTML = originalCarousel.innerHTML;
-        carouselElement.setAttribute("data-product-id", originalCarousel.productId);
+      carouselElement.innerHTML = originalCarousel.innerHTML;
+      carouselElement.setAttribute("data-product-id", originalCarousel.productId);
 
-        // Hide color name display
-        const productBlock = carouselElement.closest(
-          ".product-block, .cc-product-block"
-        );
-        const colorNameElement = productBlock?.querySelector(
-          "[data-selected-color-name]"
-        );
-        if (colorNameElement) colorNameElement.style.display = "none";
+      // Hide color name display
+      const productBlock = carouselElement.closest(
+        ".product-block, .cc-product-block"
+      );
+      const colorNameElement = productBlock?.querySelector(
+        "[data-selected-color-name]"
+      );
+      if (colorNameElement) colorNameElement.style.display = "none";
 
-        // Reinitialize carousel
-        delete carouselElement.dataset.rpcCarouselInitialized;
-        this.initializeCarousel(carouselElement);
+      // Reinitialize carousel
+      delete carouselElement.dataset.rpcCarouselInitialized;
+      this.initializeCarousel(carouselElement);
 
-        // Reset to first swatch
-        this.updateSwatchFocus(container, 0);
-        containerData.currentIndex = 0;
-      }
-    });
+      // Reset to first swatch
+      this.updateSwatchFocus(0);
+      containerData.currentIndex = 0;
+    }
   }
 }
 
-// Initialize when DOM is ready
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", () => {
-    window.relatedProductColors = new RelatedProductColors();
-  });
-} else {
-  window.relatedProductColors = new RelatedProductColors();
-}
+customElements.define('related-product-colors', RelatedProductColors);
 
 // Export for module systems
 // if (typeof module !== "undefined" && module.exports) {

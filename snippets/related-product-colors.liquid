@@ -54,13 +54,17 @@
         # Build images array for current product
         capture product_images_json
           echo '['
-          for media in product.media limit: 5
+          assign first_image = true
+          for media in product.media limit: 10
             if media.media_type == 'image'
               assign media_url = media.preview_image | image_url: width: 600
               assign media_alt = media.preview_image.alt | default: product.title
-              if forloop.first == false
+
+              if first_image == false
                 echo ','
               endif
+              assign first_image = false
+
               echo '{'
               echo '"url": "' | append: media_url | append: '",'
               echo '"alt": "' | append: media_alt | escape | append: '"'
@@ -115,13 +119,17 @@
             # Build images array for related product
             capture related_images_json
               echo '['
-              for media in related_product.media limit: 5
+              assign first_image = true
+              for media in related_product.media limit: 10
                 if media.media_type == 'image'
                   assign media_url = media.preview_image | image_url: width: 600
                   assign media_alt = media.preview_image.alt | default: related_product.title
-                  if forloop.first == false
+
+                  if first_image == false
                     echo ','
                   endif
+                  assign first_image = false
+
                   echo '{'
                   echo '"url": "' | append: media_url | append: '",'
                   echo '"alt": "' | append: media_alt | escape | append: '"'
@@ -164,7 +172,8 @@
   .related-product-colors {
     margin-top: 12px;
     margin-bottom: 8px;
-    margin-left: 8px;
+    margin-left: 0;
+    display: block;
   }
 
   .related-product-colors__swatches {
@@ -342,6 +351,43 @@
     width: 100%;
   }
 
+  /* Loading overlay on carousel while switching swatches */
+  .product-images-carousel.rpc-loading .carousel-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.65);
+    z-index: 200;
+  }
+
+  .product-images-carousel.rpc-loading .carousel-container::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 26px;
+    height: 26px;
+    margin: -13px 0 0 -13px;
+    border: 2px solid rgba(0, 0, 0, 0.25);
+    border-top-color: rgba(0, 0, 0, 0.85);
+    border-radius: 50%;
+    animation: rpc-spin 0.8s linear infinite;
+    z-index: 201;
+  }
+
+  @keyframes rpc-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Prevent interactions while loading */
+  .product-images-carousel.rpc-loading .carousel-btn,
+  .product-images-carousel.rpc-loading .carousel-dot {
+    pointer-events: none !important;
+    opacity: 0.3;
+  }
+
   /* Completely disable all theme hover effects on carousel products */
   .product-images-carousel,
   .product-images-carousel .image,
@@ -447,13 +493,17 @@
 
   .carousel-btn {
     position: absolute;
-    top: 90%;
+    top: 50%;
     transform: translateY(-50%);
     background: rgba(0, 0, 0, 0.9);
     border: none;
     width: 30px;
     height: 30px;
-    border-radius: 50%;
+    min-width: 30px;
+    min-height: 30px;
+    padding: 0 !important;
+    line-height: 0;
+    border-radius: 50% !important;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -468,7 +518,8 @@
     background: rgba(0, 0, 0, 1) !important;
   }
 
-  .carousel-track:hover + .carousel-btn {
+  .product-images-carousel:hover .carousel-btn,
+  .carousel-container:hover .carousel-btn {
     opacity: 1;
     visibility: visible;
   }
@@ -482,8 +533,8 @@
   }
 
   .carousel-btn svg {
-    color: #333;
-    stroke: #333;
+    color: #fff;
+    stroke: currentColor;
     stroke-width: 1.5;
     fill: none;
   }
@@ -491,11 +542,9 @@
   /* Selected Color Name */
   .selected-color-name {
     margin-top: 8px;
-    padding: 4px 8px;
-    background: rgba(0, 0, 0, 0.05);
+    {% comment %} padding: 4px 8px; {% endcomment %}
     border-radius: 4px;
     font-size: 12px;
-    text-align: center;
   }
 
   .selected-color-label {
@@ -562,7 +611,7 @@
     class="related-product-colors"
     data-block-id="{{ block_id }}"
     data-swatch-size="{{ swatch_size }}"
-    data-color-swatches="[{{ color_swatches_data }}]"
+    data-color-swatches='[{{ color_swatches_data }}]'
     data-target-image-selector=".product-images-carousel"
     role="group"
     aria-label="Related product color variations"

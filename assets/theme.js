@@ -5106,12 +5106,13 @@
 
       if (variant) {
         var $newPriceArea = $('<div>');
+        $('<span class="current-price theme-money">').html(theme.Shopify.formatMoney(variant.price, theme.money_format_with_code_preference)).appendTo($newPriceArea);
+        $newPriceArea.append(' ');
         if (variant.compare_at_price > variant.price) {
           $('<span class="was-price theme-money">').html(theme.Shopify.formatMoney(variant.compare_at_price, theme.money_format_with_code_preference)).appendTo($newPriceArea);
-          $newPriceArea.append(' ');
+          // $newPriceArea.append(' ');
           $priceArea.addClass('on-sale');
         }
-        $('<span class="current-price theme-money">').html(theme.Shopify.formatMoney(variant.price, theme.money_format_with_code_preference)).appendTo($newPriceArea);
         if (variant.unit_price_measurement) {
           var $newUnitPriceArea = $('<div class="unit-price">').appendTo($newPriceArea);
           $('<span class="unit-price__price theme-money">').html(theme.Shopify.formatMoney(variant.unit_price, theme.money_format)).appendTo($newUnitPriceArea);
