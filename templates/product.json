@@ -130,6 +130,44 @@
         "variant_media_grouping_option": "Color,Colour,Couleur,Farbe"
       }
     },
+    "slideshow_BUKHby": {
+      "type": "slideshow",
+      "blocks": {
+        "image_cGU8f9": {
+          "type": "image",
+          "settings": {
+            "image": "shopify://shop_images/Rangen_T-Shirt_A_Content.png",
+            "slide_link": "",
+            "subheading": "",
+            "title": "",
+            "title_size": 60,
+            "title_width": 12,
+            "heading_h1": false,
+            "text": "",
+            "enlarge_text": true,
+            "button_label": "",
+            "overlay_position": "position--hcenter position--vcenter",
+            "overlay_position_mobile": "position--hcenter-xs position--vcenter-xs"
+          }
+        }
+      },
+      "block_order": [
+        "image_cGU8f9"
+      ],
+      "name": "Slideshow",
+      "settings": {
+        "height": "fixed",
+        "height_desktop": 600,
+        "height_mobile": 500,
+        "full_width": true,
+        "mobile_overlay_under": false,
+        "overlay_style_tint": true,
+        "slide_transition": "slide",
+        "slide_navigation": "dots",
+        "autoplay": true,
+        "autoplay_speed": 7
+      }
+    },
     "product-recommendations": {
       "type": "product-recommendations",
       "settings": {
@@ -139,10 +177,32 @@
         "show_vendor": false,
         "grid": 4
       }
+    },
+    "17694449608f76dd80": {
+      "type": "apps",
+      "blocks": {
+        "judge_me_reviews_review_widget_yqDcHa": {
+          "type": "shopify://apps/judge-me-reviews/blocks/review_widget/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {
+            "review_data": "sample_data",
+            "max_width": 1200,
+            "show_shop_reviews": false,
+            "empty_state": "empty_widget"
+          }
+        }
+      },
+      "block_order": [
+        "judge_me_reviews_review_widget_yqDcHa"
+      ],
+      "settings": {
+        "skip_container": false
+      }
     }
   },
   "order": [
     "main",
-    "product-recommendations"
+    "slideshow_BUKHby",
+    "product-recommendations",
+    "17694449608f76dd80"
   ]
 }

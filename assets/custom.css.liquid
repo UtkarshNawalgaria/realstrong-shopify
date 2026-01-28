@@ -54,13 +54,27 @@
 
 .sub-collections {
   display: flex;
-  justify-content: center;
-  align-items: center;
   gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
 }
 
 .sub-collections .sub-collection-item {
+  flex: 0 0 calc(50% - 6px);
+  scroll-snap-align: start;
   width: 200px;
+}
+
+@media (min-width: 768px) {
+  .sub-collections {
+    overflow-x: none;
+    justify-content: center;
+  }
+
+  .sub-collections .sub-collection-item {
+    flex: 0 0 auto;
+  }
 }
 
 .sub-collections .sub-collection-item .collection-name {
@@ -89,4 +103,9 @@
 
 .product-highlights {
   margin-top: 20px;
+}
+
+.no-bottom-spacing {
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
