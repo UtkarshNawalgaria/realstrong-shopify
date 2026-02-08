@@ -6687,9 +6687,21 @@
 
   theme.TabbedCollectionSection = new function () {
     this.onSectionLoad = function (target) {
+
+      function initSlider(swiperEl) {
+        const $el = $(swiperEl);
+
+        if ($el.data('swiper-initialized')) return;
+
+        theme.initProductSlider($el);
+        $el.data('swiper-initialized', true);
+      }
+    
       const $swiperCont = $('.swiper-container', target);
       $swiperCont.each(function() {
-        theme.initProductSlider($(this));
+        if($(this).hasClass("active")) {
+          initSlider($(this));
+        }
       });
 
       const tabs = document.querySelectorAll('.tab', target);
@@ -6698,13 +6710,14 @@
           if (tab.classList.contains('active')) return;
 
           tabs.forEach(t => t.classList.toggle('active', t === tab));
-          document.querySelectorAll("[data-tab-content]", target)
-            .forEach(content => {
-              if (content.dataset.tabContent === tab.dataset.tab) {
-                content.classList.add('active');
+          $("[data-tab-content]", target)
+            .each(function() {
+              if (this.dataset.tabContent === tab.dataset.tab) {
+                this.classList.add('active');
               } else {
-                content.classList.remove('active');
+                this.classList.remove('active');
               }
+              initSlider($(this))
             });
         });
       })

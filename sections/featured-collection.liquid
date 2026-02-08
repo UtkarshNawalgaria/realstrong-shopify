@@ -22,9 +22,7 @@
     <div class="section-heading" data-cc-animate>
       {% if section.settings.title != blank %}
         <h2 class="h2">
-          <a data-cc-animate-click href="{{ collections[section.settings.collection].url }}">
-            {{ section.settings.title | escape }}
-          </a>
+          {{ section.settings.title | escape }}
         </h2>
       {% else %}
           <div></div>

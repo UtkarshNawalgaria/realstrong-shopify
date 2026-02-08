@@ -288,10 +288,10 @@
     }
 
     .related-product-colors .related-product-colors__swatch.related-product-colors__swatch--medium {
-      width: 24px !important;
-      height: 24px !important;
-      min-width: 24px !important;
-      min-height: 24px !important;
+      width: 18px !important;
+      height: 18px !important;
+      min-width: 18px !important;
+      min-height: 18px !important;
     }
 
     .related-product-colors .related-product-colors__swatch.related-product-colors__swatch--large {
@@ -542,7 +542,6 @@
   /* Selected Color Name */
   .selected-color-name {
     margin-top: 8px;
-    {% comment %} padding: 4px 8px; {% endcomment %}
     border-radius: 4px;
     font-size: 12px;
   }
@@ -562,6 +561,10 @@
       height: 28px;
       opacity: 0;
       visibility: hidden;
+    }
+
+    .selected-color-name {
+      display: none;
     }
 
     .product-images-carousel:hover .carousel-btn {

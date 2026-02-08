@@ -22,9 +22,7 @@
     <div>
       {% if section.settings.title != blank %}
         <h2 class="h2">
-          <a href="{{ collections[section.settings.collection].url }}">
-            {{ section.settings.title | escape }}
-          </a>
+          {{ section.settings.title | escape }}
         </h2>
       {% endif %}
 
