@@ -4504,7 +4504,7 @@
 
     let breakpoints = {
       767: {
-        slidesPerView: 1.2,
+        slidesPerView: 2,
         spaceBetween: 10
       },
       900: {
@@ -6685,6 +6685,32 @@
     };
   }();
 
+  theme.TabbedCollectionSection = new function () {
+    this.onSectionLoad = function (target) {
+      const $swiperCont = $('.swiper-container', target);
+      $swiperCont.each(function() {
+        theme.initProductSlider($(this));
+      });
+
+      const tabs = document.querySelectorAll('.tab', target);
+      tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+          if (tab.classList.contains('active')) return;
+
+          tabs.forEach(t => t.classList.toggle('active', t === tab));
+          document.querySelectorAll("[data-tab-content]", target)
+            .forEach(content => {
+              if (content.dataset.tabContent === tab.dataset.tab) {
+                content.classList.add('active');
+              } else {
+                content.classList.remove('active');
+              }
+            });
+        });
+      })
+    };
+  }();
+
   theme.FeaturedCollectionSection = new function () {
     this.onSectionLoad = function (target) {
       const $swiperCont = $('.swiper-container', target);
@@ -7883,6 +7909,7 @@
     theme.Sections.register('image-with-text-overlay', theme.ImageWithTextOverlay, { deferredLoadViewportExcess });
     theme.Sections.register('image-beside-image', theme.ImageBesideImageSection, { deferredLoadViewportExcess });
     theme.Sections.register('featured-collection', theme.FeaturedCollectionSection, { deferredLoadViewportExcess });
+    theme.Sections.register('tabbed-collection', theme.TabbedCollectionSection, { deferredLoadViewportExcess });
     theme.Sections.register('collection-list', theme.CollectionListSection, { deferredLoadViewportExcess });
     theme.Sections.register('featured-blog', theme.FeaturedBlogSection, { deferredLoadViewportExcess });
     theme.Sections.register('product-template', theme.ProductTemplateSection, { deferredLoadViewportExcess: 200 });

@@ -105,14 +105,44 @@
       "type": "featured-collection",
       "settings": {
         "title": "Bestsellers",
-        "collection": "",
-        "layout": "rows",
+        "collection": "mens-wear",
+        "layout": "carousel",
         "show_vendor": false,
         "grid": 4,
         "rows": 1,
         "grid_mobile": "2",
         "hide_swatches": false,
         "alternate_bg_color": false,
+        "show_view_all": true
+      }
+    },
+    "tab_collections_UVE9ai": {
+      "type": "tab-collections",
+      "blocks": {
+        "tab_DigWUn": {
+          "type": "tab",
+          "settings": {
+            "collection": "mens-wear"
+          }
+        },
+        "tab_AcJTyf": {
+          "type": "tab",
+          "settings": {
+            "collection": "mens-wear"
+          }
+        }
+      },
+      "block_order": [
+        "tab_DigWUn",
+        "tab_AcJTyf"
+      ],
+      "name": "Tabbed collections",
+      "settings": {
+        "title": "Shop by category",
+        "collections": [],
+        "layout": "carousel",
+        "grid": 4,
+        "hide_swatches": false,
         "show_view_all": true
       }
     },
@@ -173,6 +203,7 @@
         "video_iKyjMn": {
           "type": "video",
           "settings": {
+            "video": "shopify://files/videos/Nightly shift 😤.mp4",
             "product": "milange-half-sleeves-round-neck-ragen-t-shirt-maroon",
             "custom_title": ""
           }
@@ -180,6 +211,7 @@
         "video_JXRk6k": {
           "type": "video",
           "settings": {
+            "video": "shopify://files/videos/Video-271.mp4",
             "product": "milange-half-sleeves-round-neck-ragen-t-shirt-navy-blue",
             "custom_title": ""
           }
@@ -187,6 +219,7 @@
         "video_hCGEEM": {
           "type": "video",
           "settings": {
+            "video": "shopify://files/videos/Video-457.mp4",
             "product": "milange-half-sleeves-round-neck-ragen-t-shirt-navy-blue",
             "custom_title": ""
           }
@@ -194,6 +227,15 @@
         "video_pEkwNY": {
           "type": "video",
           "settings": {
+            "video": "shopify://files/videos/Video-970.mp4",
+            "product": "milange-half-sleeves-round-neck-ragen-t-shirt-maroon",
+            "custom_title": ""
+          }
+        },
+        "video_8LUPAn": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/Video-970.mp4",
             "product": "milange-half-sleeves-round-neck-ragen-t-shirt-maroon",
             "custom_title": ""
           }
@@ -203,13 +245,15 @@
         "video_iKyjMn",
         "video_JXRk6k",
         "video_hCGEEM",
-        "video_pEkwNY"
+        "video_pEkwNY",
+        "video_8LUPAn"
       ],
       "name": "Video Product Showcase",
       "settings": {
         "title": "Featured Videos",
-        "layout": "grid",
-        "videos_per_row": 4,
+        "heading_alignment": "center",
+        "layout": "carousel",
+        "videos_per_row": 5,
         "alternate_bg_color": false
       }
     }
@@ -219,6 +263,7 @@
     "collection-list",
     "16520947837ca06543",
     "51481929-779a-46a0-b577-17271a066706",
+    "tab_collections_UVE9ai",
     "text-columns-with-images",
     "video_product_showcase_yXwyry"
   ]
