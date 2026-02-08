@@ -22,7 +22,8 @@
                     i: forloop.index,
                     animate: forloop.index,
                     show_vendor: section.settings.show_vendor,
-                    hide_swatches: section.settings.hide_swatches
+                    hide_swatches: section.settings.hide_swatches,
+                    enable_related_colors: true
                   %}
                 </div>
               {%- endfor -%}
@@ -83,10 +84,10 @@
       "type": "range",
       "id": "grid",
       "label": "Products per row",
-      "min": 2,
-      "max": 4,
+      "min": 4,
+      "max": 8,
       "step": 1,
-      "default": 3
+      "default": 4
     }
   ]
 }
