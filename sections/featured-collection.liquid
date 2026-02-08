@@ -39,33 +39,40 @@
   {% endif %}
 
   {% if section.settings.layout == 'carousel' %}
-    <div class="swiper-container product-list product-list--{{ section.settings.layout }}"
-         data-products-in-view="{{ section.settings.grid }}">
-
-      <div class="swiper-wrapper" data-normheights=".image" data-normheights-inner="img">
-        {% if section.settings.collection != blank %}
-          {% assign collection = collections[section.settings.collection] %}
-          {% for product in collection.products limit: 12 %}
-            <div class="swiper-slide">
-              {% assign animate_delay = forloop.index | times: 0.4 %}
-              {% render 'product-block', product: product, product_class: product_class, i: forloop.index, animate: animate_delay, show_vendor: section.settings.show_vendor, hide_swatches: section.settings.hide_swatches %}
-            </div>
-          {% endfor %}
-
-        {% else %}
-          {% for i in (1..max_products) %}
-            <div class="swiper-slide">
-              {% assign animate_delay = forloop.index | times: 0.4 %}
-              {% render 'onboarding-product-block', i: forloop.index, product_class: product_class, animate: animate_delay %}
-            </div>
-          {% endfor %}
-        {% endif %}
+      <div
+        class="swiper-container product-list product-list--{{ section.settings.layout }}"
+        data-products-in-view="{{ section.settings.grid }}"
+      >
+        <div class="swiper-wrapper" data-normheights=".image" data-normheights-inner="img">
+          {% if section.settings.collection != blank %}
+            {% assign collection = collections[section.settings.collection] %}
+            {% for product in collection.products limit: 12 %}
+              <div class="swiper-slide">
+                {% assign animate_delay = forloop.index | times: 0.4 %}
+                {% render 'product-block',
+                  product: product,
+                  product_class: product_class,
+                  i: forloop.index,
+                  animate: animate_delay,
+                  show_vendor: section.settings.show_vendor,
+                  hide_swatches: section.settings.hide_swatches,
+                  enable_related_colors: true
+                %}
+              </div>
+            {% endfor %}
+          {% else %}
+            {% for i in (1..max_products) %}
+              <div class="swiper-slide">
+                {% assign animate_delay = forloop.index | times: 0.4 %}
+                {% render 'onboarding-product-block', i: forloop.index, product_class: product_class, animate: animate_delay %}
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+        <div class="swiper-scrollbar"></div>
+        <a href="#" class="swiper-button-prev js-swiper-button-prev" aria-label="{{ 'general.accessibility_labels.previous' | t | escape }}">{% render 'svg-chevron-left' %}</a>
+        <a href="#" class="swiper-button-next js-swiper-button-next" aria-label="{{ 'general.accessibility_labels.next' | t | escape }}">{% render 'svg-chevron-right' %}</a>
       </div>
-
-      <div class="swiper-scrollbar"></div>
-      <a href="#" class="swiper-button-prev js-swiper-button-prev" aria-label="{{ 'general.accessibility_labels.previous' | t | escape }}">{% render 'svg-chevron-left' %}</a>
-      <a href="#" class="swiper-button-next js-swiper-button-next" aria-label="{{ 'general.accessibility_labels.next' | t | escape }}">{% render 'svg-chevron-right' %}</a>
-    </div>
   {% else %}
     <div class="product-list
 
@@ -140,9 +147,9 @@
         "type": "range",
         "id": "grid",
         "label": "Desktop products per row",
-        "min": 2,
-        "max": 4,
-        "default": 3
+        "min": 4,
+        "max": 8,
+        "default": 4
       },
       {
         "type": "range",

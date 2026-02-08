@@ -305,14 +305,6 @@
 
     {%- comment -%} Related Product Color Swatches {%- endcomment -%}
     {%- if enable_related_colors -%}
-      {%- liquid
-        # Use passed settings from collection section or fall back to defaults
-        assign final_swatch_limit = related_products_limit | default: 6
-        assign final_swatch_shape = color_swatch_shape | default: 'square'
-        assign final_swatch_size = swatch_size | default: 'small'
-        assign show_current_product = true
-      -%}
-
       {%
         render 'related-product-colors',
         product: product,

@@ -186,8 +186,8 @@
   data-cc-animate
 >
   {% if section.settings.title != blank %}
-    <div class="section-heading" data-cc-animate>
-      <h2 class="h2">{{ section.settings.title | escape }}</h2>
+    <div class="section-heading section-heading--with-spacing" data-cc-animate>
+      <h2 class="h2 text-{{ section.settings.heading_alignment }}">{{ section.settings.title | escape }}</h2>
     </div>
   {% endif %}
 
@@ -335,6 +335,26 @@
       "id": "title",
       "label": "Section heading",
       "default": "Featured Videos"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading alignment",
+      "default": "center",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ]
     },
     {
       "type": "select",

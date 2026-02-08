@@ -61,13 +61,15 @@
     {% else %}
       <video
         class="video-block__video"
-        controls
+        style="aspect-ratio: 3/4; background: #000;"
         preload="metadata"
         muted
         playsinline
         {% if video.preview_image %}
           poster="{{ video.preview_image | img_url: '800x450' }}"
         {% endif %}
+        autoplay
+        loop
       >
         {% for source in video.sources %}
           <source src="{{ source.url }}" type="{{ source.mime_type }}">
