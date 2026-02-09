@@ -72,7 +72,7 @@
     "buttons_style": "normal",
     "buttons_shape": "sharp",
     "blog_excerpt": "below",
-    "animation_enabled_desktop": true,
+    "animation_enabled_desktop": false,
     "animation_enabled_mobile": false,
     "animation_loading": false,
     "animation_loading_message": "mila",
