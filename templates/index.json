@@ -101,6 +101,66 @@
         "color_text": ""
       }
     },
+    "video_product_showcase_yXwyry": {
+      "type": "video-product-showcase",
+      "blocks": {
+        "video_iKyjMn": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/Nightly shift 😤.mp4",
+            "product": "milange-half-sleeves-round-neck-ragen-t-shirt-maroon",
+            "custom_title": ""
+          }
+        },
+        "video_JXRk6k": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/Video-271.mp4",
+            "product": "milange-half-sleeves-round-neck-ragen-t-shirt-navy-blue",
+            "custom_title": ""
+          }
+        },
+        "video_hCGEEM": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/Video-457.mp4",
+            "product": "milange-half-sleeves-round-neck-ragen-t-shirt-navy-blue",
+            "custom_title": ""
+          }
+        },
+        "video_pEkwNY": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/Video-970.mp4",
+            "product": "milange-half-sleeves-round-neck-ragen-t-shirt-maroon",
+            "custom_title": ""
+          }
+        },
+        "video_8LUPAn": {
+          "type": "video",
+          "settings": {
+            "video": "shopify://files/videos/Video-970.mp4",
+            "product": "milange-half-sleeves-round-neck-ragen-t-shirt-maroon",
+            "custom_title": ""
+          }
+        }
+      },
+      "block_order": [
+        "video_iKyjMn",
+        "video_JXRk6k",
+        "video_hCGEEM",
+        "video_pEkwNY",
+        "video_8LUPAn"
+      ],
+      "name": "Video Product Showcase",
+      "settings": {
+        "title": "Featured Videos",
+        "heading_alignment": "center",
+        "layout": "carousel",
+        "videos_per_row": 5,
+        "alternate_bg_color": false
+      }
+    },
     "51481929-779a-46a0-b577-17271a066706": {
       "type": "featured-collection",
       "settings": {
@@ -196,75 +256,15 @@
         "alternate_bg_color": false,
         "full_width": true
       }
-    },
-    "video_product_showcase_yXwyry": {
-      "type": "video-product-showcase",
-      "blocks": {
-        "video_iKyjMn": {
-          "type": "video",
-          "settings": {
-            "video": "shopify://files/videos/Nightly shift 😤.mp4",
-            "product": "milange-half-sleeves-round-neck-ragen-t-shirt-maroon",
-            "custom_title": ""
-          }
-        },
-        "video_JXRk6k": {
-          "type": "video",
-          "settings": {
-            "video": "shopify://files/videos/Video-271.mp4",
-            "product": "milange-half-sleeves-round-neck-ragen-t-shirt-navy-blue",
-            "custom_title": ""
-          }
-        },
-        "video_hCGEEM": {
-          "type": "video",
-          "settings": {
-            "video": "shopify://files/videos/Video-457.mp4",
-            "product": "milange-half-sleeves-round-neck-ragen-t-shirt-navy-blue",
-            "custom_title": ""
-          }
-        },
-        "video_pEkwNY": {
-          "type": "video",
-          "settings": {
-            "video": "shopify://files/videos/Video-970.mp4",
-            "product": "milange-half-sleeves-round-neck-ragen-t-shirt-maroon",
-            "custom_title": ""
-          }
-        },
-        "video_8LUPAn": {
-          "type": "video",
-          "settings": {
-            "video": "shopify://files/videos/Video-970.mp4",
-            "product": "milange-half-sleeves-round-neck-ragen-t-shirt-maroon",
-            "custom_title": ""
-          }
-        }
-      },
-      "block_order": [
-        "video_iKyjMn",
-        "video_JXRk6k",
-        "video_hCGEEM",
-        "video_pEkwNY",
-        "video_8LUPAn"
-      ],
-      "name": "Video Product Showcase",
-      "settings": {
-        "title": "Featured Videos",
-        "heading_alignment": "center",
-        "layout": "carousel",
-        "videos_per_row": 5,
-        "alternate_bg_color": false
-      }
     }
   },
   "order": [
     "slideshow_iaie8i",
     "collection-list",
+    "video_product_showcase_yXwyry",
     "16520947837ca06543",
     "51481929-779a-46a0-b577-17271a066706",
     "tab_collections_UVE9ai",
-    "text-columns-with-images",
-    "video_product_showcase_yXwyry"
+    "text-columns-with-images"
   ]
 }
