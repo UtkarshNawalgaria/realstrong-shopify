@@ -16,7 +16,13 @@
         "show_collection_image": false,
         "description_position": "top",
         "show_sub_collections": true,
-        "sub_collections_list": "{{ collection.metafields.custom.sub_collections.value }}",
+        "sub_collections_list": [
+          "mens-bottom-wear",
+          "mens-cargo-shorts",
+          "mens-henleys",
+          "mens-jacket",
+          "mens-joggers"
+        ],
         "layout": "rows",
         "grid": 4,
         "grid_mobile": "2",
