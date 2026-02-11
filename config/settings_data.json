@@ -230,6 +230,11 @@
           "swym_variant_selector_create_list_placeholder_text": "Enter wishlist name",
           "swym_variant_selector_create_list_title": "Name Your Wishlist"
         }
+      },
+      "4451506397160808500": {
+        "type": "shopify://apps/nector-loyalty-rewards/blocks/floating_widget/1c1144ea-67f0-4232-93c6-0d8fbb8c8d3a",
+        "disabled": false,
+        "settings": {}
       }
     }
   },
