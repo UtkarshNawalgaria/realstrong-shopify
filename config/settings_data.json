@@ -235,6 +235,11 @@
         "type": "shopify://apps/nector-loyalty-rewards/blocks/floating_widget/1c1144ea-67f0-4232-93c6-0d8fbb8c8d3a",
         "disabled": false,
         "settings": {}
+      },
+      "2567389343055140935": {
+        "type": "shopify://apps/microsoft-clarity/blocks/clarity_js/31c3d126-8116-4b4a-8ba1-baeda7c4aeea",
+        "disabled": false,
+        "settings": {}
       }
     }
   },
