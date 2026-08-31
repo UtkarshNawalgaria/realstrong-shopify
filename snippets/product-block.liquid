@@ -305,15 +305,7 @@
 
     {%- comment -%} Related Product Color Swatches {%- endcomment -%}
     {%- if enable_related_colors -%}
-      {%
-        render 'related-product-colors',
-        product: product,
-        block_id: 'product-block-' | append: product.id,
-        swatch_limit: final_swatch_limit,
-        show_product_swatch: show_current_product,
-        swatch_size: final_swatch_size,
-        swatch_shape: final_swatch_shape
-      %}
+      {% render 'related-product-colors', product: product, block_id: 'product-block-', append: product.id, swatch_limit: final_swatch_limit, show_product_swatch: show_current_product, swatch_size: final_swatch_size, swatch_shape: final_swatch_shape %}
     {%- endif -%}
 
     <a data-cc-animate-click href="{{ product_url }}" class="caption upper">
@@ -354,3 +346,24 @@
     {% endif %}
   </div>
 </div>
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: |-
+    {%
+            render 'related-product-colors',
+            product: product,
+            block_id: 'product-block-' | append: product.id,
+            swatch_limit: final_swatch_limit,
+            show_product_swatch: show_current_product,
+            swatch_size: final_swatch_size,
+            swatch_shape: final_swatch_shape
+          %}
+  to: "{% render 'related-product-colors', product: product, block_id: 'product-block-',
+    append: product.id, swatch_limit: final_swatch_limit, show_product_swatch: show_current_product,
+    swatch_size: final_swatch_size, swatch_shape: final_swatch_shape %}"
+  position: 13972..14218
+{% endcomment %}
